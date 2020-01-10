@@ -1,0 +1,45 @@
+{
+    "name": "netlinker/fair-queue",
+    "type": "library",
+    "description": "Redis Laravel queue driver with multi-user service distribution.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "NetLinker",
+            "email": "netlinkerpro@gmail.com",
+            "homepage": "https://netlinker.pro",
+            "role": "Developer"
+        }
+    ],
+    "homepage": "https://github.com/netlinkerpro/fair-queue",
+    "keywords": ["NetLinker", "fair-queue"],
+    "require": {
+        "illuminate/support": "~5|~6"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.0",
+        "mockery/mockery": "^1.1",
+        "orchestra/testbench": "~3|~4",
+        "sempro/phpunit-pretty-print": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Netlinker\\FairQueue\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Netlinker\\FairQueue\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Netlinker\\FairQueue\\FairQueueServiceProvider"
+            ],
+            "aliases": {
+                "FairQueue": "Netlinker\\FairQueue\\Facades\\FairQueue"
+            }
+        }
+    }
+}
