@@ -1,4 +1,5 @@
-# fair-queue
+# FairQueue
+Redis Laravel queue driver with multi-user service distribution.
 
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Total Downloads][ico-downloads]][link-downloads]
