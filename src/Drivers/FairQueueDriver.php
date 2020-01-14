@@ -6,6 +6,8 @@ use Illuminate\Filesystem\Cache;
 use Illuminate\Queue\RedisQueue;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Redis;
+use Netlinker\FairQueue\Configuration\InstanceConfig;
 use Netlinker\FairQueue\Models\FairIdentifier;
 use Netlinker\FairQueue\Models\IdentifierModel;
 use Netlinker\FairQueue\Models\ModelKey;
@@ -70,8 +72,10 @@ class FairQueueDriver extends RedisQueue
      */
     public function pop($queue = 'default')
     {
+        InstanceConfig::detect();
         $modelKey = ModelKey::get($queue);
         return $this->findFairPop($modelKey, $queue);
+
     }
 
     /**
@@ -126,7 +130,7 @@ class FairQueueDriver extends RedisQueue
      */
     private function isAllowPop(string $queue, $modelKey, int $modelId):bool
     {
-        $instanceConfig = config('fair-queue.instance_config');
+        $instanceConfig = InstanceConfig::get();
 
         $active = Arr::get($instanceConfig, 'active');
 
