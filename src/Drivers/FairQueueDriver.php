@@ -2,7 +2,9 @@
 
 namespace Netlinker\FairQueue\Drivers;
 
+use Illuminate\Filesystem\Cache;
 use Illuminate\Queue\RedisQueue;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Queue;
 use Netlinker\FairQueue\Models\FairIdentifier;
 use Netlinker\FairQueue\Models\IdentifierModel;
@@ -46,6 +48,10 @@ class FairQueueDriver extends RedisQueue
         $size = 0;
         foreach (range(0, $maxId) as $number) {
 
+            if (!$this->isAllowPop($queue, $modelKey, $number)){
+                continue;
+            }
+
             $queueName = QueueNameBuilder::build($queue, $modelKey, $number);
             $size += parent::size($queueName);
 
@@ -79,26 +85,86 @@ class FairQueueDriver extends RedisQueue
      */
     public function findFairPop($modelKey, $queue = 'default')
     {
-        while (Queue::size($queue) > 0 && !$res = $this->fairPop($modelKey, $queue)) {
+        $res = null;
+
+        while(!$res){
+
+            $fairId = FairIdentifier::get($modelKey);
+
+            if (!$this->isAllowPop($queue, $modelKey, $fairId)){
+
+                continue;
+            }
+
+            $queueName = QueueNameBuilder::build($queue, $modelKey, $fairId);
+            $res = parent::pop($queueName);
+
+            if (!$res && $this->isEmptyQueue($queue)){
+                break;
+            }
 
         }
         return $res;
     }
 
     /**
-     * Fair pop
+     * Is empty queue
      *
-     * @param $modelKey
-     * @param string $queue
-     * @return \Illuminate\Contracts\Queue\Job|null
-     * @throws \Netlinker\FairQueue\Exceptions\FairQueueException
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @param $queue
+     * @return bool
      */
-    public function fairPop($modelKey, $queue = 'default')
+    private function isEmptyQueue($queue){
+        return Queue::size($queue) <= 0;
+    }
+
+    /**
+     * Is allow pop
+     * @param string $queue
+     * @param $modelKey
+     * @param int $modelId
+     * @return bool
+     */
+    private function isAllowPop(string $queue, $modelKey, int $modelId):bool
     {
-        $fairId = FairIdentifier::get($modelKey);
-        $queueName = QueueNameBuilder::build($queue, $modelKey, $fairId);
-        return parent::pop($queueName);
+        $instanceConfig = config('fair-queue.instance_config');
+
+        $active = Arr::get($instanceConfig, 'active');
+
+        // not active queue in instance
+        if (!$active){
+            return false;
+        }
+
+        $modelConfig = Arr::get($instanceConfig, 'queues.' . $queue . '.' . $modelKey);
+
+        // not set queue and model for this instance
+        if (!$modelConfig){
+            return false;
+        }
+
+        $activeModel = Arr::get($modelConfig, 'active');
+
+        // not active model for this instance
+        if (!$activeModel){
+            return false;
+        }
+
+        $allowIds = Arr::get($modelConfig, 'allow_ids', []);
+        $excludeIds = Arr::get($modelConfig, 'exclude_ids', []);
+
+        if (!$allowIds && !$excludeIds){
+            return true;
+        }
+
+        if (in_array($modelId, $allowIds)){
+            return true;
+        }
+
+        if (in_array($modelId, $excludeIds)){
+            return false;
+        }
+
+        return !!$excludeIds;
     }
 
 }

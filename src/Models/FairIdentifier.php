@@ -25,13 +25,13 @@ class FairIdentifier
             return 0;
         }
 
-        $cacheKey = 'fair-queue:' . $modelKey . ':current-id';
+        $cacheKey = 'fair-queue:identifier:' . $modelKey . ':current-id';
 
-        $currentId = Cache::increment($cacheKey);
+        $currentId = Cache::store(config('fair-queue.cache_store'))->increment($cacheKey);
 
         if ($currentId > $maxId){
 
-            Cache::forget($cacheKey);
+            Cache::store(config('fair-queue.cache_store'))->forget($cacheKey);
             return 0;
 
         }

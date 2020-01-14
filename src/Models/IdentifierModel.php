@@ -17,14 +17,14 @@ class IdentifierModel
     public static function maxId(string $modelKey)
     {
 
-        $cacheKey = 'fair-queue:' . $modelKey . ':max-id';
+        $cacheKey = 'fair-queue:identifier:' . $modelKey . ':max-id';
 
-        $maxId = Cache::store('redis')->get($cacheKey);
+        $maxId = Cache::store(config('fair-queue.cache_store'))->get($cacheKey);
 
         if (!$maxId) {
             $model = ModelSelect::select($modelKey);
             $maxId = $model::max('id');
-            Cache::store('redis')->put($cacheKey, $maxId, 1);
+            Cache::store(config('fair-queue.cache_store'))->put($cacheKey, $maxId, 1);
         }
 
         return $maxId;
