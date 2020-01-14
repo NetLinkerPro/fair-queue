@@ -40,7 +40,7 @@ return [
 
         'queues' =>[
 
-            'queue_name' => [
+            'default' => [
 
                 'user' => [ // model name
 
