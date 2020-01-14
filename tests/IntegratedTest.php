@@ -18,12 +18,12 @@ class IntegratedTest extends TestCase
     /**
      * Setup the test environment.
      */
-    public function setUp():void
+    public function setUp(): void
     {
         parent::setUp();
 
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
-        $this->withFactories(__DIR__.'/database/factories');
+        $this->withFactories(__DIR__ . '/database/factories');
 
     }
 
@@ -32,13 +32,20 @@ class IntegratedTest extends TestCase
         // Setup default database to use sqlite :memory:
         $app['config']->set('database.default', 'testbench');
         $app['config']->set('database.connections.testbench', [
-            'driver'   => 'sqlite',
+            'driver' => 'sqlite',
             'database' => ':memory:',
-            'prefix'   => '',
+            'prefix' => '',
         ]);
 
         $app['config']->set('queue.default', 'fair-queue');
         $app['config']->set('fair-queue.models.user', 'Netlinker\FairQueue\Tests\Stubs\User');
+        $app['config']->set('fair-queue.instance_config.queues.prestashop_update', [
+            'user' => [
+                'active' => true,
+                'allow_ids' => [],
+                'exclude_ids' => [],
+            ]
+        ]);
 
         $app['config']->set('queue.connections.fair-queue', [
             'driver' => 'fair-queue',
@@ -71,7 +78,7 @@ class IntegratedTest extends TestCase
     {
         Redis::command('flushdb');
 
-         factory(User::class)->create();
+        factory(User::class)->create();
 
         $job = new TestJob();
         $job->modelId = 1;
@@ -101,9 +108,9 @@ class IntegratedTest extends TestCase
         $user2 = factory(User::class)->create();
         $user3 = factory(User::class)->create();
 
-        foreach ([$user1, $user2, $user3] as $user){
+        foreach ([$user1, $user2, $user3] as $user) {
 
-            foreach (range(1, 20) as $number){
+            foreach (range(1, 20) as $number) {
 
                 $job = new TestJob();
                 $job->modelId = $user->id;
@@ -114,13 +121,13 @@ class IntegratedTest extends TestCase
 
         }
 
-        foreach (range(1, 20) as $number){
+        foreach (range(1, 20) as $number) {
             Artisan::call('queue:work', ['--once' => true, '--queue' => 'prestashop_update']);
         }
 
         $user4 = factory(User::class)->create();
 
-        foreach (range(1, 20) as $number){
+        foreach (range(1, 20) as $number) {
 
             $job = new TestJob();
             $job->modelId = $user4->id;
@@ -129,8 +136,8 @@ class IntegratedTest extends TestCase
 
         }
 
-        foreach (range(1, 60) as $number){
-            Artisan::call('queue:work', ['--once'=>'true','--queue' => 'prestashop_update']);
+        foreach (range(1, 60) as $number) {
+            Artisan::call('queue:work', ['--once' => 'true', '--queue' => 'prestashop_update']);
         }
 
 //        $job = new TestJob();
