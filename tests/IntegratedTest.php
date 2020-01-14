@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Str;
+use Netlinker\FairQueue\Configuration\InstanceConfig;
 use Netlinker\FairQueue\Tests\Mocks\TestJob;
 use Netlinker\FairQueue\Tests\Stubs\User;
 use Symfony\Component\Process\Process;
@@ -39,13 +41,15 @@ class IntegratedTest extends TestCase
 
         $app['config']->set('queue.default', 'fair-queue');
         $app['config']->set('fair-queue.models.user', 'Netlinker\FairQueue\Tests\Stubs\User');
-        $app['config']->set('fair-queue.instance_config.queues.prestashop_update', [
+        $app['config']->set('fair-queue.default_instance_config.queues.prestashop_update', [
             'user' => [
                 'active' => true,
                 'allow_ids' => [],
                 'exclude_ids' => [],
             ]
         ]);
+
+        $app['config']->set('fair-queue.instance_uuid', Str::uuid());
 
         $app['config']->set('queue.connections.fair-queue', [
             'driver' => 'fair-queue',
