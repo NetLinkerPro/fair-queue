@@ -15,7 +15,6 @@ class ConnectorTest extends TestCase
 
     public function testConnection(): void
     {
-        $this->app['config']->set('database.redis.client', 'mock');
 
         $this->app['config']->set('queue.connections.fair-queue', [
             'driver' => 'fair-queue',

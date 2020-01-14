@@ -2,17 +2,12 @@
 
 namespace Netlinker\FairQueue\Tests;
 
-use Illuminate\Cache\RedisStore;
-use Illuminate\Queue\Console\WorkCommand;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
-use Netlinker\FairQueue\Configuration\InstanceConfig;
 use Netlinker\FairQueue\Tests\Mocks\TestJob;
 use Netlinker\FairQueue\Tests\Stubs\User;
-use Symfony\Component\Process\Process;
 
 class IntegratedTest extends TestCase
 {
