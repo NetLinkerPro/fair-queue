@@ -2,7 +2,11 @@
 
 namespace Netlinker\FairQueue;
 
+use Illuminate\Contracts\Debug\ExceptionHandler;
+use Illuminate\Queue\QueueManager;
 use Illuminate\Support\ServiceProvider;
+use Netlinker\FairQueue\Connectors\FairQueueConnector;
+use Netlinker\FairQueue\Workers\FairQueueWorker;
 
 class FairQueueServiceProvider extends ServiceProvider
 {
@@ -18,6 +22,8 @@ class FairQueueServiceProvider extends ServiceProvider
         // $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         // $this->loadRoutesFrom(__DIR__.'/routes.php');
 
+        $this->registerFairQueueConnector();
+
         // Publishing is only necessary when using the CLI.
         if ($this->app->runningInConsole()) {
             $this->bootForConsole();
@@ -31,7 +37,7 @@ class FairQueueServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/fair-queue.php', 'fair-queue');
+        $this->mergeConfigFrom(__DIR__ . '/../config/fair-queue.php', 'fair-queue');
 
         // Register the service the package provides.
         $this->app->singleton('fair-queue', function ($app) {
@@ -59,7 +65,7 @@ class FairQueueServiceProvider extends ServiceProvider
 
         // Publishing the configuration file.
         $this->publishes([
-            __DIR__.'/../config/fair-queue.php' => config_path('fair-queue.php'),
+            __DIR__ . '/../config/fair-queue.php' => config_path('fair-queue.php'),
         ], 'fair-queue.config');
 
         // Publishing the views.
@@ -79,5 +85,20 @@ class FairQueueServiceProvider extends ServiceProvider
 
         // Registering package commands.
         // $this->commands([]);
+    }
+
+    /**
+     * Register in application fair queue connector
+     */
+    private function registerFairQueueConnector()
+    {
+
+        /** @var QueueManager $manager */
+        $manager = $this->app['queue'];
+
+        $manager->addConnector('fair-queue', function () {
+            return new FairQueueConnector($this->app['redis']);
+        });
+
     }
 }
