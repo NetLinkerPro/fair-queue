@@ -1,12 +1,11 @@
 # FairQueue
-Redis Laravel queue driver with multi-user service distribution.
 
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Total Downloads][ico-downloads]][link-downloads]
-[![Build Status][ico-travis]][link-travis]
-[![StyleCI][ico-styleci]][link-styleci]
 
-This is where your description should go. Take a look at [contributing.md](contributing.md) to see a to do list.
+Redis Laravel queue driver with multi-user service distribution.
+
+Take a look at [contributing.md](contributing.md) to see a to do list.
 
 ## Installation
 
@@ -25,8 +24,10 @@ Please see the [changelog](changelog.md) for more information on what has change
 ## Testing
 
 ``` bash
-$ composer test
+$  REDIS_HOST=0.0.0.0 REDIS_PASSWORD=secret ./vendor/bin/phpunit
 ```
+
+For tests can be set all setting from `.env` file as `REDIS_PORT=6379`.
 
 ## Contributing
 
