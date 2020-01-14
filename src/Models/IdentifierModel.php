@@ -24,7 +24,7 @@ class IdentifierModel
         if (!$maxId) {
             $model = ModelSelect::select($modelKey);
             $maxId = $model::max('id');
-            Cache::store(config('fair-queue.cache_store'))->put($cacheKey, $maxId, 1);
+            Cache::store(config('fair-queue.cache_store'))->put($cacheKey, $maxId, 60);
         }
 
         return $maxId;
