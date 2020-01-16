@@ -1,8 +1,8 @@
 # Changelog
 
-All notable changes to `fair-queue` will be documented in this file.
+All notable changes to `fair-queue`.
 
-## Version 1.0
+## Version 0.0.1-beta
 
 ### Added
-- Everything
+- Spreading get job by pop method in driver with use many users.
