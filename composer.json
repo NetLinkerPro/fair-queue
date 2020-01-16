@@ -20,7 +20,8 @@
         "phpunit/phpunit": "^8.0",
         "mockery/mockery": "^1.1",
         "orchestra/testbench": "~3|~4",
-        "sempro/phpunit-pretty-print": "^1.0"
+        "sempro/phpunit-pretty-print": "^1.0",
+        "brainmaestro/composer-git-hooks": "^2.8"
     },
     "autoload": {
         "psr-4": {
@@ -41,5 +42,8 @@
                 "FairQueue": "NetLinker\\FairQueue\\Facades\\FairQueue"
             }
         }
+    },
+    "scripts": {
+        "pre-commit": "REDIS_HOST=0.0.0.0 REDIS_PASSWORD=secret ./vendor/bin/phpunit && echo pushing!"
     }
 }
