@@ -21,7 +21,7 @@
         </whitelist>
     </filter>
     <php>
-        <env name="REDIS_HOST" value="0.0.0.00"/>
+        <env name="REDIS_HOST" value="0.0.0.0"/>
         <env name="REDIS_PORT" value="6379"/>
         <env name="REDIS_DB" value="netlinker_fairqueue_test"/>
         <env name="REDIS_PASSWORD" value="secret"/>

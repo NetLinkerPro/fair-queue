@@ -2,6 +2,7 @@
 
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Total Downloads][ico-downloads]][link-downloads]
+[![Build Status][ico-travis]][link-travis]
 
 Redis Laravel queue driver with multi-user service distribution.
 
@@ -24,7 +25,7 @@ Please see the [changelog](changelog.md) for more information on what has change
 ## Testing
 
 ``` bash
-$  REDIS_HOST=0.0.0.0 REDIS_PASSWORD=secret ./vendor/bin/phpunit
+$ REDIS_HOST=0.0.0.0 REDIS_PASSWORD=secret ./vendor/bin/phpunit
 ```
 
 For tests can be set all setting from `.env` file as `REDIS_PORT=6379`.
@@ -53,7 +54,7 @@ license. Please see the [license file](license.md) for more information.
 
 [link-packagist]: https://packagist.org/packages/netlinker/fair-queue
 [link-downloads]: https://packagist.org/packages/netlinker/fair-queue
-[link-travis]: https://travis-ci.org/netlinker/fair-queue
+[link-travis]: https://travis-ci.org/NetLinkerPro/fair-queue
 [link-styleci]: https://styleci.io/repos/12345678
 [link-author]: https://github.com/netlinker
 [link-contributors]: ../../contributors
