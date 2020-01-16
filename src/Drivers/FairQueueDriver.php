@@ -45,7 +45,7 @@ class FairQueueDriver extends RedisQueue
     public function size($queue = 'default')
     {
         $modelKey = ModelKey::get($queue);
-        $maxId = IdentifierModel::maxId($modelKey);
+        $maxId = IdentifierModel::maxId($modelKey, $queue);
 
         $size = 0;
         foreach (range(0, $maxId) as $number) {
@@ -93,7 +93,7 @@ class FairQueueDriver extends RedisQueue
 
         while(!$res){
 
-            $fairId = FairIdentifier::get($modelKey);
+            $fairId = FairIdentifier::get($modelKey, $queue);
 
             if (!$this->isAllowPop($queue, $modelKey, $fairId)){
 

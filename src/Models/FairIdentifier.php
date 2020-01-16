@@ -17,15 +17,15 @@ class FairIdentifier
      * @throws \Netlinker\FairQueue\Exceptions\FairQueueException
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public static function get($modelKey){
+    public static function get(string $modelKey, string $queue = 'default'){
 
-        $maxId = IdentifierModel::maxId($modelKey);
+        $maxId = IdentifierModel::maxId($modelKey, $queue);
 
         if (!$maxId){
             return 0;
         }
 
-        $cacheKey = 'fair-queue:identifier:' . $modelKey . ':current-id';
+        $cacheKey = 'fair-queue:identifier:' .$queue. ':' . $modelKey . ':current-id';
 
         $currentId = Cache::store(config('fair-queue.cache_store'))->increment($cacheKey);
 
