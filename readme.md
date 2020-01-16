@@ -5,8 +5,6 @@
 
 Redis Laravel queue driver with multi-user service distribution.
 
-Take a look at [contributing.md](contributing.md) to see a to do list.
-
 ## Installation
 
 Via Composer
@@ -16,6 +14,8 @@ $ composer require netlinker/fair-queue
 ```
 
 ## Usage
+
+Documentation location is [here][link-documentation]
 
 ## Change log
 
@@ -39,7 +39,7 @@ If you discover any security related issues, please email author email instead o
 
 ## Credits
 
-- [author name][link-author]
+- [NetLinker][link-author]
 - [All Contributors][link-contributors]
 
 ## License
@@ -57,3 +57,4 @@ license. Please see the [license file](license.md) for more information.
 [link-styleci]: https://styleci.io/repos/12345678
 [link-author]: https://github.com/netlinker
 [link-contributors]: ../../contributors
+[link-documentation]: https://netlinker.pro/docs/modules/fair-queue
