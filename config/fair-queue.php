@@ -44,7 +44,7 @@ return [
 
                 'user' => [ // model name
 
-                    'active' => false,
+                    'active' => true,
 
                     'refresh_max_id' => 60, // seconds
 
