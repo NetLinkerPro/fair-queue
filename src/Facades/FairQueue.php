@@ -1,6 +1,6 @@
 <?php
 
-namespace Netlinker\FairQueue\Facades;
+namespace NetLinker\FairQueue\Facades;
 
 use Illuminate\Support\Facades\Facade;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Netlinker\FairQueue;
+namespace NetLinker\FairQueue;
 
 class FairQueue
 {

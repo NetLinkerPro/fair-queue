@@ -1,11 +1,11 @@
 <?php
 
 
-namespace Netlinker\FairQueue\Queues;
+namespace NetLinker\FairQueue\Queues;
 
 
-use Netlinker\FairQueue\Exceptions\FairQueueException;
-use Netlinker\FairQueue\Models\ModelKey;
+use NetLinker\FairQueue\Exceptions\FairQueueException;
+use NetLinker\FairQueue\Models\ModelKey;
 
 class QueueNameBuilder
 {

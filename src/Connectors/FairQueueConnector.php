@@ -1,10 +1,10 @@
 <?php
 
-namespace Netlinker\FairQueue\Connectors;
+namespace NetLinker\FairQueue\Connectors;
 
 use Illuminate\Queue\Connectors\ConnectorInterface;
 use Illuminate\Contracts\Redis\Factory as Redis;
-use Netlinker\FairQueue\Drivers\FairQueueDriver;
+use NetLinker\FairQueue\Drivers\FairQueueDriver;
 
 class FairQueueConnector implements ConnectorInterface
 {

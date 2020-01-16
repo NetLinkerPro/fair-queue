@@ -1,17 +1,17 @@
 <?php
 
-namespace Netlinker\FairQueue\Drivers;
+namespace NetLinker\FairQueue\Drivers;
 
 use Illuminate\Filesystem\Cache;
 use Illuminate\Queue\RedisQueue;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Redis;
-use Netlinker\FairQueue\Configuration\InstanceConfig;
-use Netlinker\FairQueue\Models\FairIdentifier;
-use Netlinker\FairQueue\Models\IdentifierModel;
-use Netlinker\FairQueue\Models\ModelKey;
-use Netlinker\FairQueue\Queues\QueueNameBuilder;
+use NetLinker\FairQueue\Configuration\InstanceConfig;
+use NetLinker\FairQueue\Models\FairIdentifier;
+use NetLinker\FairQueue\Models\IdentifierModel;
+use NetLinker\FairQueue\Models\ModelKey;
+use NetLinker\FairQueue\Queues\QueueNameBuilder;
 
 class FairQueueDriver extends RedisQueue
 {
@@ -24,7 +24,7 @@ class FairQueueDriver extends RedisQueue
      * @param mixed $data
      * @param string|null $queue
      * @return mixed
-     * @throws \Netlinker\FairQueue\Exceptions\FairQueueException
+     * @throws \NetLinker\FairQueue\Exceptions\FairQueueException
      */
     public function push($job, $data = '', $queue = 'default')
     {
@@ -39,7 +39,7 @@ class FairQueueDriver extends RedisQueue
      *
      * @param string|null $queue
      * @return int
-     * @throws \Netlinker\FairQueue\Exceptions\FairQueueException
+     * @throws \NetLinker\FairQueue\Exceptions\FairQueueException
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function size($queue = 'default')
@@ -67,7 +67,7 @@ class FairQueueDriver extends RedisQueue
      *
      * @param string|null $queue
      * @return \Illuminate\Contracts\Queue\Job|null
-     * @throws \Netlinker\FairQueue\Exceptions\FairQueueException
+     * @throws \NetLinker\FairQueue\Exceptions\FairQueueException
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function pop($queue = 'default')
@@ -84,7 +84,7 @@ class FairQueueDriver extends RedisQueue
      * @param $modelKey
      * @param string $queue
      * @return \Illuminate\Contracts\Queue\Job|null
-     * @throws \Netlinker\FairQueue\Exceptions\FairQueueException
+     * @throws \NetLinker\FairQueue\Exceptions\FairQueueException
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function findFairPop($modelKey, $queue = 'default')

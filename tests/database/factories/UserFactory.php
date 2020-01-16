@@ -14,7 +14,7 @@ use Faker\Generator as Faker;
 */
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-$factory->define(\Netlinker\FairQueue\Tests\Stubs\User::class, function (Faker $faker) {
+$factory->define(\NetLinker\FairQueue\Tests\Stubs\User::class, function (Faker $faker) {
     return [
         'name' => $faker->name,
         'email' => $faker->unique()->safeEmail,

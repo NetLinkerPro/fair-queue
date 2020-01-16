@@ -24,21 +24,21 @@
     },
     "autoload": {
         "psr-4": {
-            "Netlinker\\FairQueue\\": "src/"
+            "NetLinker\\FairQueue\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Netlinker\\FairQueue\\Tests\\": "tests"
+            "NetLinker\\FairQueue\\Tests\\": "tests"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Netlinker\\FairQueue\\FairQueueServiceProvider"
+                "NetLinker\\FairQueue\\FairQueueServiceProvider"
             ],
             "aliases": {
-                "FairQueue": "Netlinker\\FairQueue\\Facades\\FairQueue"
+                "FairQueue": "NetLinker\\FairQueue\\Facades\\FairQueue"
             }
         }
     }

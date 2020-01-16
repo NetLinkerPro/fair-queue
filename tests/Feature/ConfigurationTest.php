@@ -1,14 +1,14 @@
 <?php
 
 
-namespace Netlinker\FairQueue\Tests\Feature;
+namespace NetLinker\FairQueue\Tests\Feature;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
-use Netlinker\FairQueue\Configuration\InstanceConfig;
-use Netlinker\FairQueue\Tests\TestCase;
+use NetLinker\FairQueue\Configuration\InstanceConfig;
+use NetLinker\FairQueue\Tests\TestCase;
 
 
 class ConfigurationTest extends TestCase

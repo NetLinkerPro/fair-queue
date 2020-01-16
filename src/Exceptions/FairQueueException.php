@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Netlinker\FairQueue\Exceptions;
+namespace NetLinker\FairQueue\Exceptions;
 
 
 class FairQueueException extends \Exception

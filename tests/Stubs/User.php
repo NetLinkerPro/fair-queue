@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Netlinker\FairQueue\Tests\Stubs;
+namespace NetLinker\FairQueue\Tests\Stubs;
 
 
 

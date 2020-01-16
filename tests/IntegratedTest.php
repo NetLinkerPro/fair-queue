@@ -1,6 +1,6 @@
 <?php
 
-namespace Netlinker\FairQueue\Tests;
+namespace NetLinker\FairQueue\Tests;
 
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Artisan;
@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
-use Netlinker\FairQueue\Tests\Mocks\TestJob;
-use Netlinker\FairQueue\Tests\Stubs\User;
+use NetLinker\FairQueue\Tests\Mocks\TestJob;
+use NetLinker\FairQueue\Tests\Stubs\User;
 
 class IntegratedTest extends TestCase
 {
@@ -37,7 +37,7 @@ class IntegratedTest extends TestCase
         ]);
 
         $app['config']->set('queue.default', 'fair-queue');
-        $app['config']->set('fair-queue.models.user', 'Netlinker\FairQueue\Tests\Stubs\User');
+        $app['config']->set('fair-queue.models.user', 'NetLinker\FairQueue\Tests\Stubs\User');
         $app['config']->set('fair-queue.default_instance_config.queues.prestashop_update', [
             'user' => [
                 'active' => true,

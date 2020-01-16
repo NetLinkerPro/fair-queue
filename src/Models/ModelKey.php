@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Netlinker\FairQueue\Models;
+namespace NetLinker\FairQueue\Models;
 
 
-use Netlinker\FairQueue\Exceptions\FairQueueException;
+use NetLinker\FairQueue\Exceptions\FairQueueException;
 
 class ModelKey
 {

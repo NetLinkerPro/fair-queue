@@ -1,12 +1,12 @@
 <?php
 
 
-namespace Netlinker\FairQueue\Models;
+namespace NetLinker\FairQueue\Models;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
-use Netlinker\FairQueue\Configuration\InstanceConfig;
-use Netlinker\FairQueue\Configuration\InstanceRefreshMaxId;
+use NetLinker\FairQueue\Configuration\InstanceConfig;
+use NetLinker\FairQueue\Configuration\InstanceRefreshMaxId;
 
 class IdentifierModel
 {

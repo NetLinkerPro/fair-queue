@@ -1,6 +1,6 @@
 <?php
 
-namespace Netlinker\FairQueue\Tests;
+namespace NetLinker\FairQueue\Tests;
 
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Filesystem\Filesystem;

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Netlinker\FairQueue\Tests\Mocks;
+namespace NetLinker\FairQueue\Tests\Mocks;
 
 
 use Exception;

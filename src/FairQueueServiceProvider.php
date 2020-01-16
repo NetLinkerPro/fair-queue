@@ -1,12 +1,12 @@
 <?php
 
-namespace Netlinker\FairQueue;
+namespace NetLinker\FairQueue;
 
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Queue\QueueManager;
 use Illuminate\Support\ServiceProvider;
-use Netlinker\FairQueue\Connectors\FairQueueConnector;
-use Netlinker\FairQueue\Workers\FairQueueWorker;
+use NetLinker\FairQueue\Connectors\FairQueueConnector;
+use NetLinker\FairQueue\Workers\FairQueueWorker;
 
 class FairQueueServiceProvider extends ServiceProvider
 {

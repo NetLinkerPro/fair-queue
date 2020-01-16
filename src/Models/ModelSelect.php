@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Netlinker\FairQueue\Models;
+namespace NetLinker\FairQueue\Models;
 
 
 class ModelSelect

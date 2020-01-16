@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Netlinker\FairQueue\Models;
+namespace NetLinker\FairQueue\Models;
 
 
 use Illuminate\Support\Facades\Cache;
@@ -14,7 +14,7 @@ class FairIdentifier
      *
      * @param $modelKey
      * @return bool|int
-     * @throws \Netlinker\FairQueue\Exceptions\FairQueueException
+     * @throws \NetLinker\FairQueue\Exceptions\FairQueueException
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public static function get(string $modelKey, string $queue = 'default'){

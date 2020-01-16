@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Netlinker\FairQueue\Configuration;
+namespace NetLinker\FairQueue\Configuration;
 
 
 use Illuminate\Support\Arr;

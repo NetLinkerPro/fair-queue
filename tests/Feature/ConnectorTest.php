@@ -1,13 +1,13 @@
 <?php
 
 
-namespace Netlinker\FairQueue\Tests\Feature;
+namespace NetLinker\FairQueue\Tests\Feature;
 
 use Illuminate\Queue\Connectors\RedisConnector;
 use Illuminate\Queue\QueueManager;
-use Netlinker\FairQueue\Connectors\FairQueueConnector;
-use Netlinker\FairQueue\Drivers\FairQueueDriver;
-use Netlinker\FairQueue\Tests\TestCase;
+use NetLinker\FairQueue\Connectors\FairQueueConnector;
+use NetLinker\FairQueue\Drivers\FairQueueDriver;
+use NetLinker\FairQueue\Tests\TestCase;
 
 
 class ConnectorTest extends TestCase

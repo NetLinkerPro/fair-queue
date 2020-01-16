@@ -1,6 +1,6 @@
 <?php
 
-namespace Netlinker\FairQueue\Tests;
+namespace NetLinker\FairQueue\Tests;
 
 use Orchestra\Testbench\TestCase as TestBench;
 
@@ -51,6 +51,6 @@ abstract class TestCase extends TestBench
      */
     protected function getPackageProviders($app)
     {
-        return ['Netlinker\FairQueue\FairQueueServiceProvider'];
+        return ['NetLinker\FairQueue\FairQueueServiceProvider'];
     }
 }
