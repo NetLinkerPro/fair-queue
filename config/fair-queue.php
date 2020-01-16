@@ -46,6 +46,8 @@ return [
 
                     'active' => false,
 
+                    'refresh_max_id' => 60, // seconds
+
                     'allow_ids' => [],
 
                     'exclude_ids' => [],
