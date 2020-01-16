@@ -83,4 +83,24 @@ class ConfigurationTest extends TestCase
 
     }
 
+    public function test_save_new_model_to_json_file(){
+
+        InstanceConfig::get();
+
+        Config::set('fair-queue.default_instance_config.queues.default', [
+            'company' => [
+                'active' => true
+            ]
+        ]);
+
+        Config::set('fair-queue.instance_config');
+
+        InstanceConfig::get();
+
+        $fileConfig = json_decode(File::get(storage_path('instance/fair-queue.json')), JSON_UNESCAPED_UNICODE);
+
+        $this->assertTrue(Arr::get($fileConfig, 'queues.default.company.active'));
+        $this->assertTrue(Arr::get($fileConfig, 'queues.default.user.active'));
+
+    }
 }

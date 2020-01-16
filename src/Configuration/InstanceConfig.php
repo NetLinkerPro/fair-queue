@@ -73,25 +73,61 @@ class InstanceConfig
         $fileInstanceConfig = json_decode(File::get(storage_path('instance/fair-queue.json')), JSON_UNESCAPED_UNICODE);
         $defaultQueues = Config::get('fair-queue.default_instance_config.queues', []);
 
-        $existQueues = array_keys(Arr::get($fileInstanceConfig, 'queues', []));
+        $existQueues = Arr::get($fileInstanceConfig, 'queues', []);
+        $existQueueKeys = array_keys($existQueues);
 
-        $foundNew = false;
+        $mustSave = false;
 
-        foreach($defaultQueues as $queue => $defaultQueue){
+        foreach($defaultQueues as $queueName => $defaultQueue){
 
-            if (!in_array($queue, $existQueues)){
+            if (!in_array($queueName, $existQueueKeys)){
 
-                Arr::set($fileInstanceConfig, 'queues.' . $queue, $defaultQueue);
-                $foundNew = true;
+                Arr::set($fileInstanceConfig, 'queues.' . $queueName, $defaultQueue);
+                $mustSave = true;
+
+            } else {
+
+                $existQueue = Arr::get($existQueues, $queueName, []);
+                $mustSave = static::setNewModels($queueName, $defaultQueue, $existQueue, $fileInstanceConfig);
 
             }
 
         }
 
-        if ($foundNew){
+        if ($mustSave){
             static::save($fileInstanceConfig);
         }
 
+    }
+
+    /**
+     * Set new models from default instance configuration in config fair queue file
+     *
+     * @param $queueName
+     * @param $defaultQueue
+     * @param $existQueue
+     * @param $fileInstanceConfig
+     * @return bool New models set
+     */
+    public static function setNewModels($queueName, $defaultQueue, $existQueue, &$fileInstanceConfig):bool
+    {
+
+        $existModels = array_keys($existQueue);
+
+        $newModel = false;
+
+        foreach ($defaultQueue as $modelName => $defaultModel){
+
+            if (!in_array($modelName, $existModels)){
+
+                Arr::set($fileInstanceConfig, 'queues.' . $queueName . '.' . $modelName , $defaultModel);
+                $newModel= true;
+
+            }
+
+        }
+
+        return $newModel;
     }
 
     /**
