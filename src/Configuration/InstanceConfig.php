@@ -26,6 +26,9 @@ class InstanceConfig
         }
 
         if (File::exists(storage_path('instance/fair-queue.json'))){
+
+            static::saveNewQueues();
+
             $config = json_decode(File::get(storage_path('instance/fair-queue.json')), JSON_UNESCAPED_UNICODE);
         }
 
@@ -58,6 +61,35 @@ class InstanceConfig
             static::save($config);
             Config::set('fair-queue.instance_config', $config);
             Cache::store(config('fair-queue.cache_store'))->forget($cacheKey);
+        }
+
+    }
+
+    /**
+     * Save new queues from default instance configuration in config fair queue file
+     */
+    public static function saveNewQueues()
+    {
+        $fileInstanceConfig = json_decode(File::get(storage_path('instance/fair-queue.json')), JSON_UNESCAPED_UNICODE);
+        $defaultQueues = Config::get('fair-queue.default_instance_config.queues', []);
+
+        $existQueues = array_keys(Arr::get($fileInstanceConfig, 'queues', []));
+
+        $foundNew = false;
+
+        foreach($defaultQueues as $queue => $defaultQueue){
+
+            if (!in_array($queue, $existQueues)){
+
+                Arr::set($fileInstanceConfig, 'queues.' . $queue, $defaultQueue);
+                $foundNew = true;
+
+            }
+
+        }
+
+        if ($foundNew){
+            static::save($fileInstanceConfig);
         }
 
     }
