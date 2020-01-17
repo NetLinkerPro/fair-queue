@@ -5,6 +5,7 @@ namespace NetLinker\FairQueue\Configuration;
 
 
 use Illuminate\Support\Arr;
+use NetLinker\FairQueue\Queues\QueueNameBuilder;
 
 class InstanceRefreshMaxId
 {
@@ -18,6 +19,6 @@ class InstanceRefreshMaxId
      */
     public static function get(string $modelKey, string $queue='default', int $default = 60){
         $instanceConfig = InstanceConfig::get();
-        return Arr::get($instanceConfig, 'queues.' . $queue . '.' . $modelKey . '.refresh_max_id', $default);
+        return Arr::get($instanceConfig, 'queues.' . QueueNameBuilder::buildOnlyName($modelKey, $queue) . '.' . $modelKey . '.refresh_max_id', $default);
     }
 }

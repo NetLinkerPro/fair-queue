@@ -5,8 +5,10 @@ namespace NetLinker\FairQueue\Models;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
+use Netlinker\FairQueue\Cache\CacheKeyBuilder;
 use NetLinker\FairQueue\Configuration\InstanceConfig;
 use NetLinker\FairQueue\Configuration\InstanceRefreshMaxId;
+use NetLinker\FairQueue\Queues\QueueNameBuilder;
 
 class IdentifierModel
 {
@@ -20,8 +22,7 @@ class IdentifierModel
      */
     public static function maxId(string $modelKey, string $queue = 'default')
     {
-
-        $cacheKey = 'fair-queue:identifier:' . $queue.':' . $modelKey . ':max-id';
+        $cacheKey = 'fair-queue:identifier:' . QueueNameBuilder::buildNameWithModelKey($modelKey, $queue) . ':max-id';
 
         $maxId = Cache::store(config('fair-queue.cache_store'))->get($cacheKey);
 

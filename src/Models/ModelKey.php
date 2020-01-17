@@ -25,10 +25,18 @@ class ModelKey
         $explodeQueue = explode(':', $queue);
 
         if (sizeof($explodeQueue) < 2){
-            return config('fair-queue.default_model');
-        }
 
-        $modelKey = end($explodeQueue);
+            return config('fair-queue.default_model');
+
+        } else if (sizeof($explodeQueue) === 2){
+
+            $modelKey = end($explodeQueue);
+
+        } else if (sizeof($explodeQueue) === 4){
+
+            $modelKey = $explodeQueue[2];
+
+        }
 
         if (!config('fair-queue.models.'.$modelKey)){
             throw new FairQueueException('Not found model key in config `fair-queue.models`');

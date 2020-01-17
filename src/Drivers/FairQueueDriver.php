@@ -7,6 +7,7 @@ use Illuminate\Queue\RedisQueue;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Str;
 use NetLinker\FairQueue\Configuration\InstanceConfig;
 use NetLinker\FairQueue\Models\FairIdentifier;
 use NetLinker\FairQueue\Models\IdentifierModel;
@@ -44,6 +45,10 @@ class FairQueueDriver extends RedisQueue
      */
     public function size($queue = 'default')
     {
+        if (Str::startsWith($queue, 'fair_queue:')){
+            return parent::size($queue);
+        }
+
         $modelKey = ModelKey::get($queue);
         $maxId = IdentifierModel::maxId($modelKey, $queue);
 
@@ -139,7 +144,7 @@ class FairQueueDriver extends RedisQueue
             return false;
         }
 
-        $modelConfig = Arr::get($instanceConfig, 'queues.' . $queue . '.' . $modelKey);
+        $modelConfig = Arr::get($instanceConfig, 'queues.' . QueueNameBuilder::buildOnlyName($modelKey, $queue) . '.' . $modelKey);
 
         // not set queue and model for this instance
         if (!$modelConfig){
