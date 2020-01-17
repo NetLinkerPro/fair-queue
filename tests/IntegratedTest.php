@@ -176,4 +176,30 @@ class IntegratedTest extends TestCase
         Artisan::call('queue:work', ['--once' => 'true', '--queue' => 'prestashop_update:company']);
         $this->assertEquals(2, Cache::get('test_job'));
     }
+
+
+    public function test_size_queue()
+    {
+        $user = factory(User::class)->create();
+        $company = factory(Company::class)->create();
+
+        Config::set('fair-queue.default_instance_config.queues.prestashop_update.company', [
+            'active' => true
+        ]);
+
+        Config::set('fair-queue.models.company', 'NetLinker\FairQueue\Tests\Stubs\Company');
+
+        $job = new TestJob();
+        $job->modelId = $user->id;
+
+        dispatch($job)->onQueue('prestashop_update');
+
+        $job = new TestJob();
+        $job->modelId = $company->id;
+
+        dispatch($job)->onQueue('prestashop_update:company');
+
+        $this->assertEquals(1, Queue::size('prestashop_update'));
+        $this->assertEquals(1, Queue::size('prestashop_update:company'));
+    }
 }
