@@ -4,6 +4,7 @@
 namespace NetLinker\FairQueue\Tests\Feature;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
@@ -59,7 +60,44 @@ class ConfigurationTest extends TestCase
 
         $this->assertEquals(3, sizeof(Arr::get($config, 'queues.default.user.allow_ids')));
 
+    }
 
+    public function test_detect_config_for_many_workers(){
+
+        Artisan::call('cache:clear');
+        Redis::command('flushdb');
+
+        $uuid = Str::uuid();
+
+        Config::set('fair-queue.instance_uuid', $uuid);
+
+        InstanceConfig::update($uuid, ['queues.default.user.allow_ids'=> [1,2,3]]);
+
+        InstanceConfig::detect();
+
+        $lastUpdatedAt =  Config::get('fair-queue.instance_config.last_updated_at');
+
+        $this->assertStringContainsString(Carbon::class, $lastUpdatedAt);
+
+        Config::set('fair-queue.instance_config.last_updated_at');
+
+        $lastUpdatedAt =  Config::get('fair-queue.instance_config.last_updated_at');
+
+        $this->assertNull($lastUpdatedAt);
+
+        InstanceConfig::detect();
+
+        $lastUpdatedAt =  Config::get('fair-queue.instance_config.last_updated_at');
+
+        $this->assertStringContainsString(Carbon::class, $lastUpdatedAt);
+
+        Config::set('fair-queue.instance_config.last_updated_at', now()->subHours(2)->serialize());
+
+        InstanceConfig::detect();
+
+        $lastUpdatedAt =  Config::get('fair-queue.instance_config.last_updated_at');
+
+        $this->assertStringContainsString(Carbon::class, $lastUpdatedAt);
     }
 
     public function test_save_new_queue_to_json_file(){

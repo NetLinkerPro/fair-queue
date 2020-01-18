@@ -3,8 +3,8 @@
 
 namespace NetLinker\FairQueue\Configuration;
 
-
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
@@ -15,13 +15,14 @@ class InstanceConfig
     /**
      * Get instance config
      *
+     * @param bool $reload
      * @return \Illuminate\Config\Repository|mixed
      */
-    public static function get()
+    public static function get($reload = false)
     {
         $config = config('fair-queue.instance_config');
 
-        if ($config){
+        if ($config && !$reload){
             return $config;
         }
 
@@ -42,6 +43,8 @@ class InstanceConfig
 
     /**
      * Detect from redis cache change config
+     *
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public static function detect()
     {
@@ -50,9 +53,9 @@ class InstanceConfig
         $cacheKey = 'fair-queue.instances.update_config.' . $instanceUuid;
         $updateConfig = Cache::store(config('fair-queue.cache_store'))->get($cacheKey);
 
-        if ($updateConfig) {
+        $config = static::get();
 
-            $config = static::get();
+        if ($updateConfig) {
 
             foreach ($updateConfig as $key => $value){
                 Arr::set($config, $key, $value);
@@ -61,8 +64,52 @@ class InstanceConfig
             static::save($config);
             Config::set('fair-queue.instance_config', $config);
             Cache::store(config('fair-queue.cache_store'))->forget($cacheKey);
+
         }
 
+        $cacheKeyLastUpdatedAt = 'fair-queue.instances.last_updated_at.' . $instanceUuid;
+        $lastUpdateAt = Cache::store(config('fair-queue.cache_store'))->get($cacheKeyLastUpdatedAt);
+
+        if (!$lastUpdateAt){
+            return;
+        }
+
+        $lastUpdateAt = Carbon::fromSerialized($lastUpdateAt);
+
+        $configLastUpdatedAt = Arr::get($config, 'last_updated_at');
+
+        if (!$configLastUpdatedAt){
+            static::get(true);
+            return;
+        }
+
+        $configLastUpdatedAt = Carbon::fromSerialized($configLastUpdatedAt);
+
+        if ($lastUpdateAt->gt($configLastUpdatedAt)){
+            static::get(true);
+            return;
+        }
+
+    }
+
+
+    /**
+     * Update
+     *
+     * @param $instanceUuid
+     * @param array $data Example ['queues.queue_name.user.active' => true]
+     */
+    public static function update($instanceUuid, $data)
+    {
+        $cacheKey = 'fair-queue.instances.update_config.' . $instanceUuid;
+        $cacheKeyLastUpdatedAt = 'fair-queue.instances.last_updated_at.' . $instanceUuid;
+
+        $lastUpdatedAt = now()->serialize();
+
+        $data['last_updated_at'] = $lastUpdatedAt;
+
+        Cache::store(config('fair-queue.cache_store'))->forever($cacheKey, $data);
+        Cache::store(config('fair-queue.cache_store'))->forever($cacheKeyLastUpdatedAt, $lastUpdatedAt);
     }
 
     /**
@@ -157,16 +204,4 @@ class InstanceConfig
         File::put(storage_path('instance/fair-queue.json'), json_encode($config, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
     }
 
-    /**
-     * Update
-     *
-     * @param $instanceUuid
-     * @param array $data Example ['queues.queue_name.user.active' => true]
-     */
-    public static function update($instanceUuid, $data)
-    {
-        $cacheKey = 'fair-queue.instances.update_config.' . $instanceUuid;
-
-        Cache::store(config('fair-queue.cache_store'))->forever($cacheKey, $data);
-    }
 }
