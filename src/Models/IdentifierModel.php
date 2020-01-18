@@ -20,7 +20,7 @@ class IdentifierModel
      * @return mixed
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public static function maxId(string $modelKey, string $queue = 'default')
+    public static function maxId(string $modelKey, $queue = 'default')
     {
         $cacheKey = 'fair-queue:identifier:' . QueueNameBuilder::buildNameWithModelKey($modelKey, $queue) . ':max-id';
 
