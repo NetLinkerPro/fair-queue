@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
+use League\Flysystem\Filesystem;
 use NetLinker\FairQueue\Configuration\InstanceConfig;
 use NetLinker\FairQueue\Tests\TestCase;
 
@@ -123,19 +124,26 @@ class ConfigurationTest extends TestCase
 
     public function test_save_new_model_to_json_file(){
 
-        InstanceConfig::get();
+         InstanceConfig::get();
 
-        Config::set('fair-queue.default_instance_config.queues.default', [
-            'company' => [
-                'active' => true
-            ]
+         Config::get('fair-queue.instance_config');
+
+        Config::set('fair-queue.default_instance_config.queues.default.company', [
+            'active' => true
         ]);
 
         Config::set('fair-queue.instance_config');
 
-        InstanceConfig::get();
+        /** @var Filesystem $file */
+        $path = storage_path('instance/fair-queue.json');
+        if (File::exists($path)){
+            File::delete($path);
+        }
 
-        $fileConfig = json_decode(File::get(storage_path('instance/fair-queue.json')), JSON_UNESCAPED_UNICODE);
+       InstanceConfig::get();
+
+
+        $fileConfig = json_decode(File::get($path), JSON_UNESCAPED_UNICODE);
 
         $this->assertTrue(Arr::get($fileConfig, 'queues.default.company.active'));
         $this->assertTrue(Arr::get($fileConfig, 'queues.default.user.active'));

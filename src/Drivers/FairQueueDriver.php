@@ -27,8 +27,9 @@ class FairQueueDriver extends RedisQueue
      * @return mixed
      * @throws \NetLinker\FairQueue\Exceptions\FairQueueException
      */
-    public function push($job, $data = '', $queue = 'default')
+    public function push($job, $data = '', $queue = null)
     {
+        $queue = $queue ?? 'default';
         $modelKey = ModelKey::get($queue);
         $modelId = $job->modelId ?? 0;
         $queue = QueueNameBuilder::build($queue, $modelKey, $modelId);
@@ -43,8 +44,10 @@ class FairQueueDriver extends RedisQueue
      * @throws \NetLinker\FairQueue\Exceptions\FairQueueException
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function size($queue = 'default')
+    public function size($queue = null)
     {
+        $queue = $queue ?? 'default';
+
         if (Str::startsWith($queue, 'fair_queue:')){
             return parent::size($queue);
         }
@@ -75,8 +78,9 @@ class FairQueueDriver extends RedisQueue
      * @throws \NetLinker\FairQueue\Exceptions\FairQueueException
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public function pop($queue = 'default')
+    public function pop($queue = null)
     {
+        $queue = $queue ?? 'default';
         InstanceConfig::detect();
         $modelKey = ModelKey::get($queue);
         return $this->findFairPop($modelKey, $queue);

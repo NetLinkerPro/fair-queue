@@ -18,7 +18,8 @@ class TestJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $modelId = 0;
+    /** @var int modelId */
+    public $modelId;
 
     public $handleSleep = 0;
 

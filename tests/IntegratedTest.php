@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 use NetLinker\FairQueue\Tests\Mocks\TestJob;
 use NetLinker\FairQueue\Tests\Stubs\Company;
+use NetLinker\FairQueue\Tests\Stubs\Owner;
 use NetLinker\FairQueue\Tests\Stubs\User;
 
 class IntegratedTest extends TestCase
@@ -29,35 +30,6 @@ class IntegratedTest extends TestCase
 
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
         $this->withFactories(__DIR__ . '/database/factories');
-    }
-
-    protected function getEnvironmentSetUp($app)
-    {
-        // Setup default database to use sqlite :memory:
-        $app['config']->set('database.default', 'testbench');
-        $app['config']->set('database.connections.testbench', [
-            'driver' => 'sqlite',
-            'database' => ':memory:',
-            'prefix' => '',
-        ]);
-
-        $app['config']->set('queue.default', 'fair-queue');
-        $app['config']->set('fair-queue.models.user', 'NetLinker\FairQueue\Tests\Stubs\User');
-        $app['config']->set('fair-queue.default_instance_config.queues.prestashop_update', [
-            'user' => [
-                'active' => true,
-                'refresh_max_id' => 1,
-                'allow_ids' => [],
-                'exclude_ids' => [],
-            ]
-        ]);
-
-        $app['config']->set('fair-queue.instance_uuid', Str::uuid());
-
-        $app['config']->set('queue.connections.fair-queue', [
-            'driver' => 'fair-queue',
-        ]);
-
     }
 
     public function test_fair_identifier_without_user()
@@ -81,7 +53,8 @@ class IntegratedTest extends TestCase
 
     public function test_fair_identifier_with_user()
     {
-        factory(User::class)->create();
+        $owner =  factory(Owner::class)->create();
+        factory(User::class)->create(['owner_uuid'=> $owner->uuid]);
 
         $job = new TestJob();
         $job->modelId = 1;
@@ -105,9 +78,12 @@ class IntegratedTest extends TestCase
 
     public function test_many_users()
     {
-        $user1 = factory(User::class)->create();
-        $user2 = factory(User::class)->create();
-        $user3 = factory(User::class)->create();
+        $owner =  factory(Owner::class)->create();
+        factory(User::class)->create(['owner_uuid'=> $owner->uuid]);
+
+        $user1 = factory(User::class)->create(['owner_uuid'=> $owner->uuid]);
+        $user2 =  factory(User::class)->create(['owner_uuid'=> $owner->uuid]);
+        $user3 =  factory(User::class)->create(['owner_uuid'=> $owner->uuid]);
 
         foreach ([$user1, $user2, $user3] as $user) {
 
@@ -126,7 +102,7 @@ class IntegratedTest extends TestCase
             Artisan::call('queue:work', ['--once' => true, '--queue' => 'prestashop_update']);
         }
 
-        $user4 = factory(User::class)->create();
+        $user4 = factory(User::class)->create(['owner_uuid'=> $owner->uuid]);
 
         foreach (range(1, 20) as $number) {
 
@@ -148,7 +124,8 @@ class IntegratedTest extends TestCase
 
     public function test_two_models()
     {
-        $user = factory(User::class)->create();
+        $owner =  factory(Owner::class)->create();
+        $user =  factory(User::class)->create(['owner_uuid'=> $owner->uuid]);
         $company = factory(Company::class)->create();
 
         Config::set('fair-queue.default_instance_config.queues.prestashop_update.company', [
@@ -180,7 +157,8 @@ class IntegratedTest extends TestCase
 
     public function test_size_queue()
     {
-        $user = factory(User::class)->create();
+        $owner =  factory(Owner::class)->create();
+        $user =  factory(User::class)->create(['owner_uuid'=> $owner->uuid]);
         $company = factory(Company::class)->create();
 
         Config::set('fair-queue.default_instance_config.queues.prestashop_update.company', [

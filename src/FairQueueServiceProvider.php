@@ -2,11 +2,19 @@
 
 namespace NetLinker\FairQueue;
 
-use Illuminate\Contracts\Debug\ExceptionHandler;
+use Carbon\Carbon;
+use Exception;
+use Illuminate\Contracts\Queue\Job;
+use Illuminate\Queue\Events\JobExceptionOccurred;
+use Illuminate\Queue\Events\JobFailed;
+use Illuminate\Queue\Events\JobProcessed;
+use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Queue\QueueManager;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use NetLinker\FairQueue\Connectors\FairQueueConnector;
-use NetLinker\FairQueue\Workers\FairQueueWorker;
+use NetLinker\FairQueue\Sections\JobStatuses\Models\JobStatus;
+use NetLinker\FairQueue\Sections\JobStatuses\Repositories\JobStatusRepository;
 
 class FairQueueServiceProvider extends ServiceProvider
 {
@@ -17,12 +25,14 @@ class FairQueueServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'netlinker');
-        // $this->loadViewsFrom(__DIR__.'/../resources/views', 'netlinker');
-        // $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-        // $this->loadRoutesFrom(__DIR__.'/routes.php');
+        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'fair-queue');
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'fair-queue');
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
 
         $this->registerFairQueueConnector();
+
+        $this->registerEventListenerJobStatuses();
 
         // Publishing is only necessary when using the CLI.
         if ($this->app->runningInConsole()) {
@@ -66,25 +76,25 @@ class FairQueueServiceProvider extends ServiceProvider
         // Publishing the configuration file.
         $this->publishes([
             __DIR__ . '/../config/fair-queue.php' => config_path('fair-queue.php'),
-        ], 'fair-queue.config');
+        ], 'config');
 
         // Publishing the views.
-        /*$this->publishes([
-            __DIR__.'/../resources/views' => base_path('resources/views/vendor/netlinker'),
-        ], 'fair-queue.views');*/
+        $this->publishes([
+            __DIR__.'/../resources/views' => base_path('resources/views/vendor/fair-queue'),
+        ], 'views');
 
         // Publishing assets.
-        /*$this->publishes([
-            __DIR__.'/../resources/assets' => public_path('vendor/netlinker'),
-        ], 'fair-queue.views');*/
+        $this->publishes([
+            __DIR__.'/../resources/assets' => public_path('vendor/fair-queue'),
+        ], 'views');
 
         // Publishing the translation files.
-        /*$this->publishes([
-            __DIR__.'/../resources/lang' => resource_path('lang/vendor/netlinker'),
-        ], 'fair-queue.views');*/
+        $this->publishes([
+            __DIR__.'/../resources/lang' => resource_path('lang/vendor/fair-queue'),
+        ], 'views');
 
         // Registering package commands.
-        // $this->commands([]);
+        $this->commands([]);
     }
 
     /**
@@ -100,5 +110,87 @@ class FairQueueServiceProvider extends ServiceProvider
             return new FairQueueConnector($this->app['redis']);
         });
 
+    }
+
+    /**
+     * Register event listener job statuses
+     */
+    private function registerEventListenerJobStatuses()
+    {
+        /** @var JobStatus $entityClass */
+        $entityClass = app()->getAlias(JobStatus::class);
+
+        // Add Event listeners
+        app(QueueManager::class)->before(function (JobProcessing $event) use ($entityClass){
+            $this->updateJobStatus($event->job, [
+                'status' => $entityClass::STATUS_EXECUTING,
+                'job_id' => $event->job->getJobId(),
+                'queue' => $event->job->getQueue(),
+                'started_at' => Carbon::now()
+            ]);
+        });
+        app(QueueManager::class)->after(function (JobProcessed $event) use($entityClass){
+
+            $this->updateJobStatus($event->job, [
+                'status' => $entityClass::STATUS_FINISHED,
+                'finished_at' => Carbon::now()
+            ]);
+        });
+
+        app(QueueManager::class)->failing(function (JobFailed $event) use ($entityClass){
+            $this->updateJobStatus($event->job, [
+                'status' => $entityClass::STATUS_FAILED,
+                'finished_at' => Carbon::now(),
+                'error' => $event->exception->getMessage() . PHP_EOL . $event->exception->getTraceAsString(),
+            ]);
+        });
+
+        app(QueueManager::class)->exceptionOccurred(function (JobExceptionOccurred $event) use($entityClass) {
+            $this->updateJobStatus($event->job, [
+                'status' => $entityClass::STATUS_FAILED,
+                'finished_at' => Carbon::now(),
+                'error' => $event->exception->getMessage() . PHP_EOL . $event->exception->getTraceAsString(),
+            ]);
+        });
+    }
+
+    /**
+     * Update job status
+     *
+     * @param Job $job
+     * @param array $data
+     * @return |null
+     */
+    private function updateJobStatus(Job $job, array $data)
+    {
+        try {
+            $payload = $job->payload();
+            $jobStatus = unserialize($payload['data']['command']);
+
+            if (!is_callable([$jobStatus, 'getJobStatusId'])) {
+                return null;
+            }
+
+            $jobStatusId = $jobStatus->getJobStatusId();
+
+            $jobStatus =  (new JobStatusRepository())->scopeOwner()->findOrFail($jobStatusId);
+
+            // Set status interrupted if exist
+            if ($jobStatus->interrupt && $data['status'] === JobStatus::STATUS_FINISHED){
+                $data['status'] = JobStatus::STATUS_INTERRUPTED;
+            }
+
+            // Try to add attempts to the data we're saving - this will fail
+            // for some drivers since they delete the job before we can check
+            try {
+                $data['attempts'] = $job->attempts();
+            } catch (Exception $e) { }
+
+            return $jobStatus->update($data);
+
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            return null;
+        }
     }
 }

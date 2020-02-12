@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'are_you_sure_interrupt_job_status' => 'Czy na pewno chcesz przerwać zadanie?',
+    'data_input' => 'Dane wejściowe',
+    'data_input_short' => 'Wejściowe',
+    'data_output' => 'Dane wyjściowe',
+    'data_output_short' => 'Wyjściowe',
+    'executing' => 'Wykonywane',
+    'external_uuid' => 'Zewnętrzny UUID',
+    'failed' => 'Błędne',
+    'finished' => 'Zakończone',
+    'interrupted' => 'Przerwane',
+    'job' => 'Zadanie',
+    'job_id' => 'ID zadania',
+    'job_list'=> 'Lista zadań',
+    'job_status_was_successfully_interrupted' => 'Zadanie zostało pomyślnie przerwane',
+    'jobs' => 'Zadania',
+    'meta_description' => 'Zarządzanie zadaniami',
+    'meta_title' => 'Zadania',
+    'progress_percentage' => 'Postęp',
+    'show_data_input' => 'Pokaż',
+    'show_data_output' => 'Pokaż',
+    'show_error' => 'Pokaż',
+    'show_logs' => 'Pokaż',
+    'queue' => 'Kolejka',
+    'queued' => 'W kolejce',
+];
