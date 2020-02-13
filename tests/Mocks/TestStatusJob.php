@@ -81,9 +81,6 @@ class TestStatusJob implements ShouldQueue
             'test_out' => true,
         ]);
 
-        $this->update([
-            'message' => 'OK',
-            'progress_now' => $this->progressMax,
-        ]);
+        $this->setProgressNow($this->progressMax);
     }
 }
