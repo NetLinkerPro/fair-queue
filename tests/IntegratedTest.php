@@ -16,7 +16,7 @@ use NetLinker\FairQueue\Tests\Stubs\Company;
 use NetLinker\FairQueue\Tests\Stubs\Owner;
 use NetLinker\FairQueue\Tests\Stubs\User;
 
-class IntegratedTest extends TestCase
+class IntegratedTest
 {
 
     /**
@@ -25,9 +25,6 @@ class IntegratedTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-
-        $horizon = factory(Horizon::class)->create();
-        Config::set('fair-queue.horizon_uuid', $horizon->uuid);
 
         Artisan::call('cache:clear');
         Redis::command('flushdb');
