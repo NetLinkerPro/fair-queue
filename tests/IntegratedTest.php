@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
+use NetLinker\FairQueue\Sections\Horizons\Models\Horizon;
 use NetLinker\FairQueue\Tests\Mocks\TestJob;
 use NetLinker\FairQueue\Tests\Stubs\Company;
 use NetLinker\FairQueue\Tests\Stubs\Owner;
@@ -24,6 +25,9 @@ class IntegratedTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+
+        $horizon = factory(Horizon::class)->create();
+        Config::set('fair-queue.horizon_uuid', $horizon->uuid);
 
         Artisan::call('cache:clear');
         Redis::command('flushdb');
