@@ -2,35 +2,52 @@
 
 namespace NetLinker\FairQueue\Connectors;
 
-use Illuminate\Queue\Connectors\ConnectorInterface;
 use Illuminate\Contracts\Redis\Factory as Redis;
+use Illuminate\Queue\Connectors\RedisConnector as BaseConnector;
+use Illuminate\Queue\Worker;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Request;
+use Laravel\Horizon\Horizon;
+use Laravel\Horizon\MasterSupervisor;
+use Laravel\Horizon\Supervisor;
 use NetLinker\FairQueue\Drivers\FairQueueDriver;
+use NetLinker\FairQueue\Events\WorkerStarted;
+use NetLinker\FairQueue\Events\WorkerStarting;
+use NetLinker\FairQueue\FairQueue;
 
-class FairQueueConnector implements ConnectorInterface
+class FairQueueConnector extends BaseConnector
 {
 
-    /** @var Redis $redis */
-    protected $redis;
-
     /**
-     * Constructor
+     * Create a new Redis queue connector instance.
      *
-     * @param Redis $redis
+     * @param \Illuminate\Contracts\Redis\Factory $redis
+     * @param string|null $connection
+     * @return void
+     * @throws \NetLinker\FairQueue\Exceptions\FairQueueException
      */
-    public function __construct(Redis $redis)
+    public function __construct(Redis $redis, $connection = null)
     {
-        $this->redis = $redis;
+        event(new WorkerStarting());
+        event(new WorkerStarted());
+        parent::__construct($redis, $connection);
     }
-
 
     /**
      * Establish a queue connection.
      *
      * @param array $config
-     * @return \Illuminate\Contracts\Queue\Queue
+     * @return FairQueueDriver
      */
     public function connect(array $config)
     {
-        return new FairQueueDriver($this->redis);
+        return new FairQueueDriver(
+            $this->redis, $config['queue'] ?? 'default',
+            Arr::get($config, 'connection', $this->connection),
+            Arr::get($config, 'retry_after', 60),
+            Arr::get($config, 'block_for', null)
+        );
     }
 }

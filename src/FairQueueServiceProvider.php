@@ -4,12 +4,14 @@ namespace NetLinker\FairQueue;
 
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Queue\Job;
 use Illuminate\Queue\Events\JobExceptionOccurred;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Queue\QueueManager;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use NetLinker\FairQueue\Connectors\FairQueueConnector;
@@ -18,6 +20,9 @@ use NetLinker\FairQueue\Sections\JobStatuses\Repositories\JobStatusRepository;
 
 class FairQueueServiceProvider extends ServiceProvider
 {
+
+    use EventMap;
+
     /**
      * Perform post-registration booting of services.
      *
@@ -25,10 +30,12 @@ class FairQueueServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'fair-queue');
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'fair-queue');
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+        $this->registerEvents();
+
+        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'fair-queue');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'fair-queue');
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+        $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
 
         $this->registerFairQueueConnector();
 
@@ -80,17 +87,17 @@ class FairQueueServiceProvider extends ServiceProvider
 
         // Publishing the views.
         $this->publishes([
-            __DIR__.'/../resources/views' => base_path('resources/views/vendor/fair-queue'),
+            __DIR__ . '/../resources/views' => base_path('resources/views/vendor/fair-queue'),
         ], 'views');
 
         // Publishing assets.
         $this->publishes([
-            __DIR__.'/../resources/assets' => public_path('vendor/fair-queue'),
+            __DIR__ . '/../resources/assets' => public_path('vendor/fair-queue'),
         ], 'views');
 
         // Publishing the translation files.
         $this->publishes([
-            __DIR__.'/../resources/lang' => resource_path('lang/vendor/fair-queue'),
+            __DIR__ . '/../resources/lang' => resource_path('lang/vendor/fair-queue'),
         ], 'views');
 
         // Registering package commands.
@@ -98,18 +105,30 @@ class FairQueueServiceProvider extends ServiceProvider
     }
 
     /**
+     * Register the Horizon job events.
+     *
+     * @return void
+     */
+    protected function registerEvents()
+    {
+        $events = $this->app->make(Dispatcher::class);
+
+        foreach ($this->events as $event => $listeners) {
+            foreach ($listeners as $listener) {
+                $events->listen($event, $listener);
+            }
+        }
+    }
+    /**
      * Register in application fair queue connector
      */
     private function registerFairQueueConnector()
     {
-
-        /** @var QueueManager $manager */
-        $manager = $this->app['queue'];
-
-        $manager->addConnector('fair-queue', function () {
-            return new FairQueueConnector($this->app['redis']);
+        $this->app->resolving(QueueManager::class, function ($manager) {
+            $manager->addConnector('fair-queue', function () {
+                return new FairQueueConnector($this->app['redis']);
+            });
         });
-
     }
 
     /**
@@ -121,7 +140,7 @@ class FairQueueServiceProvider extends ServiceProvider
         $entityClass = app()->getAlias(JobStatus::class);
 
         // Add Event listeners
-        app(QueueManager::class)->before(function (JobProcessing $event) use ($entityClass){
+        app(QueueManager::class)->before(function (JobProcessing $event) use ($entityClass) {
             $this->updateJobStatus($event->job, [
                 'status' => $entityClass::STATUS_EXECUTING,
                 'job_id' => $event->job->getJobId(),
@@ -129,7 +148,7 @@ class FairQueueServiceProvider extends ServiceProvider
                 'started_at' => Carbon::now()
             ]);
         });
-        app(QueueManager::class)->after(function (JobProcessed $event) use($entityClass){
+        app(QueueManager::class)->after(function (JobProcessed $event) use ($entityClass) {
 
             $this->updateJobStatus($event->job, [
                 'status' => $entityClass::STATUS_FINISHED,
@@ -137,7 +156,7 @@ class FairQueueServiceProvider extends ServiceProvider
             ]);
         });
 
-        app(QueueManager::class)->failing(function (JobFailed $event) use ($entityClass){
+        app(QueueManager::class)->failing(function (JobFailed $event) use ($entityClass) {
             $this->updateJobStatus($event->job, [
                 'status' => $entityClass::STATUS_FAILED,
                 'finished_at' => Carbon::now(),
@@ -145,7 +164,7 @@ class FairQueueServiceProvider extends ServiceProvider
             ]);
         });
 
-        app(QueueManager::class)->exceptionOccurred(function (JobExceptionOccurred $event) use($entityClass) {
+        app(QueueManager::class)->exceptionOccurred(function (JobExceptionOccurred $event) use ($entityClass) {
             $this->updateJobStatus($event->job, [
                 'status' => $entityClass::STATUS_FAILED,
                 'finished_at' => Carbon::now(),
@@ -173,10 +192,10 @@ class FairQueueServiceProvider extends ServiceProvider
 
             $jobStatusId = $jobStatus->getJobStatusId();
 
-            $jobStatus =  (new JobStatusRepository())->scopeOwner()->findOrFail($jobStatusId);
+            $jobStatus = (new JobStatusRepository())->scopeOwner()->findOrFail($jobStatusId);
 
             // Set status interrupted if exist
-            if ($jobStatus->interrupt && $data['status'] === JobStatus::STATUS_FINISHED){
+            if ($jobStatus->interrupt && $data['status'] === JobStatus::STATUS_FINISHED) {
                 $data['status'] = JobStatus::STATUS_INTERRUPTED;
             }
 
@@ -184,7 +203,8 @@ class FairQueueServiceProvider extends ServiceProvider
             // for some drivers since they delete the job before we can check
             try {
                 $data['attempts'] = $job->attempts();
-            } catch (Exception $e) { }
+            } catch (Exception $e) {
+            }
 
             return $jobStatus->update($data);
 

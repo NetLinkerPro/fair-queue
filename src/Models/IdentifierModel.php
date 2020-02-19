@@ -15,27 +15,27 @@ class IdentifierModel
     /**
      * Max ID
      *
-     * @param string|null $modelKey
+     * @param string|null $model
      * @param string $queue
      * @return mixed
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public static function maxId(string $modelKey, $queue = 'default')
+    public static function maxId(string $model, $queue = 'default')
     {
-        $cacheKey = 'fair-queue:identifier:' . QueueNameBuilder::buildNameWithModelKey($modelKey, $queue) . ':max-id';
+        $cacheKey = 'fair-queue:identifier:' . QueueNameBuilder::buildNameWithModelKey($model, $queue) . ':max-id';
 
         $maxId = Cache::store(config('fair-queue.cache_store'))->get($cacheKey);
 
         if (!$maxId) {
-            $model = ModelSelect::select($modelKey);
+            $model = ModelSelect::select($model);
             $maxId = $model::max('id');
 
-            $refreshMaxId = InstanceRefreshMaxId::get($modelKey, $queue, 60);
+            $refreshMaxId = InstanceRefreshMaxId::get($model, $queue, 60);
 
             Cache::store(config('fair-queue.cache_store'))->put($cacheKey, $maxId, $refreshMaxId);
         }
 
-        return $maxId;
+        return (int)$maxId;
 
     }
 

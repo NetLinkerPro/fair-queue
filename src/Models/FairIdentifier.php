@@ -12,20 +12,20 @@ class FairIdentifier
     /**
      * Get fair identifier
      *
-     * @param $modelKey
+     * @param $model
      * @return bool|int
      * @throws \NetLinker\FairQueue\Exceptions\FairQueueException
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-    public static function get(string $modelKey, string $queue = 'default'){
+    public static function get(string $model, string $queue = 'default'){
 
-        $maxId = IdentifierModel::maxId($modelKey, $queue);
+        $maxId = IdentifierModel::maxId($model, $queue);
 
         if (!$maxId){
             return 0;
         }
 
-        $cacheKey = 'fair-queue:identifier:' .$queue. ':' . $modelKey . ':current-id';
+        $cacheKey = 'fair-queue:identifier:' .$queue. ':' . $model . ':current-id';
 
         $currentId = Cache::store(config('fair-queue.cache_store'))->increment($cacheKey);
 
@@ -36,7 +36,7 @@ class FairIdentifier
 
         }
 
-        return $currentId;
+        return (int) $currentId;
 
     }
 }

@@ -21,11 +21,11 @@
         </whitelist>
     </filter>
     <php>
+        <env name="APP_ENV" value="local"/>
         <env name="REDIS_HOST" value="0.0.0.0"/>
         <env name="REDIS_PORT" value="6379"/>
         <env name="REDIS_DB" value="10"/>
         <env name="REDIS_PASSWORD" value="secret"/>
         <env name="CACHE_DRIVER" value="redis"/>
-
     </php>
 </phpunit>

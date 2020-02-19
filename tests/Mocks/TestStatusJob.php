@@ -63,6 +63,7 @@ class TestStatusJob implements ShouldQueue
         $this->loginUserJob();
         $this->setProgressMax(100);
 
+        dump('run job');
         for ($i = 1; $i <= 100; $i++) {
 
             usleep(1000*10);

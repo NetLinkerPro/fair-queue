@@ -4,6 +4,13 @@ return [
 
     /*
      |--------------------------------------------------------------------------
+     | Unique identify horizon
+     |--------------------------------------------------------------------------
+     */
+    'horizon_uuid' => env('HORIZON_UUID', null),
+
+    /*
+     |--------------------------------------------------------------------------
      | Default models with identifier
      |
      | Model must contains ID column. Model selected from below `models` array.
@@ -131,5 +138,12 @@ return [
 
         'job_statuses' => 'NetLinker\FairQueue\Sections\JobStatuses\Controllers\JobStatusController',
 
+        'horizons' => 'NetLinker\FairQueue\Sections\Horizons\Controllers\HorizonController',
+
+        'queues' => 'NetLinker\FairQueue\Sections\Queues\Controllers\QueueController',
+
+        'supervisors' => 'NetLinker\FairQueue\Sections\Supervisors\Controllers\SupervisorController',
+
+        'accesses' => 'NetLinker\FairQueue\Sections\Accesses\Controllers\AccessController',
     ],
 ];

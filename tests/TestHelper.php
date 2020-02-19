@@ -8,6 +8,7 @@ use Facebook\WebDriver\WebDriverPoint;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Laravel\Dusk\Browser;
@@ -85,7 +86,9 @@ trait TestHelper
 
             $queues = array_merge($withQueues, ['default']);
 
-            Artisan::call('queue:work', ['--queue' => join(',', $queues)]);
+           while(true){
+               Artisan::call('queue:work', ['--once' => true,'--queue' => join(',', $queues)]);
+           }
 
         }
 
@@ -232,6 +235,9 @@ trait TestHelper
             'AwesIO\ThemeSwitcher\ThemeSwitcherServiceProvider',
             'AwesIO\SystemNotify\SystemNotifyServiceProvider',
             'AwesIO\Repository\RepositoryServiceProvider',
+            'BeyondCode\DumpServer\DumpServerServiceProvider',
+            'Laravel\Horizon\HorizonServiceProvider',
+            'Laravel\Horizon\HorizonApplicationServiceProvider',
         ];
     }
 
@@ -239,7 +245,8 @@ trait TestHelper
     {
         return [
             'LocalizationHelper' => ' AwesIO\LocalizationHelper\Facades\LocalizationHelper',
-            'Notify' => 'AwesIO\\SystemNotify\\Facades\\Notify',
+            'Notify' => 'AwesIO\SystemNotify\Facades\Notify',
+            'Horizon'=> 'Laravel\Horizon\Horizon',
         ];
     }
 
