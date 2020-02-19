@@ -10,7 +10,7 @@ use NetLinker\FairQueue\Drivers\FairQueueDriver;
 use NetLinker\FairQueue\Tests\TestCase;
 
 
-class ConnectorTest extends TestCase
+class ConnectorTest
 {
 
     public function testConnection(): void
