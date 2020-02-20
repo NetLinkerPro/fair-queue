@@ -2,13 +2,9 @@
 
 namespace NetLinker\FairQueue\Sections\Queues\Models;
 
-use Cog\Contracts\Ownership\Ownable as OwnableContract;
-use Cog\Laravel\Ownership\Traits\HasOwner;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Auth;
-use NetLinker\FairQueue\FairQueue;
+use NetLinker\FairQueue\Queues\QueueConfiguration;
 use Ramsey\Uuid\Uuid;
 
 class Queue extends Model
@@ -40,7 +36,7 @@ class Queue extends Model
      */
     public $fillable = ['uuid', 'horizon_uuid','supervisor_uuid','name', 'queue', 'refresh_max_model_id', 'active'];
 
-    public $orderable = [];
+    public $orderable = ['name', 'queue', 'refresh_max_model_id', 'active'];
 
     protected $encryptable = [];
 
@@ -72,6 +68,10 @@ class Queue extends Model
             if ($original_uuid !== $model->uuid) {
                 $model->uuid = $original_uuid;
             }
+        });
+
+        static::saved(function ($model) {
+            QueueConfiguration::broadcastUpdated();
         });
     }
 

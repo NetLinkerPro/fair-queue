@@ -73,4 +73,18 @@ class JobStatusRepository extends BaseRepository
         ], $id);
     }
 
+    /**
+     * Count executing by horizon
+     *
+     * @param $uuid
+     * @return mixed
+     */
+    public function countExecutingByHorizon($uuid)
+    {
+        return $this->findWhere([
+            'horizon_uuid' => $uuid,
+            'status' => JobStatus::STATUS_EXECUTING,
+        ])->count();
+    }
+
 }

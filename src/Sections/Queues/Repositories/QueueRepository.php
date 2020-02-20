@@ -3,12 +3,8 @@
 namespace NetLinker\FairQueue\Sections\Queues\Repositories;
 
 use AwesIO\Repository\Eloquent\BaseRepository;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
-use NetLinker\FairQueue\FairQueue;
 use NetLinker\FairQueue\Sections\Queues\Models\Queue;
 use NetLinker\FairQueue\Sections\Queues\Scopes\QueueScopes;
-use NetLinker\FairQueue\Tests\Stubs\User;
 
 class QueueRepository extends BaseRepository
 {

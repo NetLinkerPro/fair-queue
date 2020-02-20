@@ -3,11 +3,11 @@
 namespace NetLinker\FairQueue\Sections\JobStatuses\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use Imper86\AllegroRestApiSdk\Helper\TokenBundleFactory;
 use NetLinker\FairQueue\Sections\Accounts\Repositories\AccountRepository;
 use NetLinker\FairQueue\Sections\Accounts\Resources\Account;
 use NetLinker\FairQueue\Sections\Applications\Repositories\ApplicationRepository;
 use NetLinker\FairQueue\Sections\Applications\Resources\Application;
+use NetLinker\FairQueue\Sections\Horizons\Repositories\HorizonRepository;
 
 class JobStatus extends JsonResource
 {
@@ -37,6 +37,7 @@ class JobStatus extends JsonResource
             'error' => $this->error,
             'logs' => $this->logs,
             'name' => $this->name,
+            'horizon' => (new HorizonRepository())->findWhere(['uuid' => $this->horizon_uuid])->first(),
         ];
     }
 }

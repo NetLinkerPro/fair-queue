@@ -3,7 +3,6 @@
 namespace NetLinker\FairQueue\Sections\Horizons\Repositories;
 
 use AwesIO\Repository\Eloquent\BaseRepository;
-use Illuminate\Support\Facades\Auth;
 use NetLinker\FairQueue\Sections\Horizons\Models\Horizon;
 use NetLinker\FairQueue\Sections\Horizons\Scopes\HorizonScopes;
 
@@ -42,6 +41,28 @@ class HorizonRepository extends BaseRepository
         $this->reset();
 
         return $results;
+    }
+
+    /**
+     * Is active
+     *
+     * @param $id
+     * @return mixed
+     */
+    public function isActive($id)
+    {
+        return $this->entity->where('id', $id)->first()->active;
+    }
+
+    /**
+     * Get UUID
+     *
+     * @param $id
+     * @return mixed
+     */
+    public function getUuid($id)
+    {
+        return $this->entity->where('id', $id)->first()->uuid;
     }
 
 

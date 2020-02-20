@@ -20,13 +20,13 @@ class CreateFairQueueAccessesTable extends Migration
             $table->string('queue_uuid', 36)->index();
             $table->string('name')->index();
             $table->text('description')->nullable();
-
             $table->string('type')->index();
             $table->string('object_uuid', 36)->index();
-
             $table->boolean('active')->index()->default(false);
             $table->softDeletes();
             $table->timestamps();
+
+            $table->unique(['queue_uuid', 'object_uuid'], 'fqa_queue_uuid_object_uuid');
         });
     }
 

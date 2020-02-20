@@ -41,6 +41,7 @@ Route::domain(config('fair-queue.domain'))
             Route::post('store', config('fair-queue.controllers.horizons') . '@store')->name('store');
             Route::patch('{id?}', config('fair-queue.controllers.horizons') . '@update')->name('update');
             Route::delete('{id?}', config('fair-queue.controllers.horizons') . '@destroy')->name('destroy');
+            Route::post('restart', config('fair-queue.controllers.horizons') . '@restart')->name('restart');
         });
 
         # Queues

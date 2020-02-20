@@ -6,6 +6,13 @@ use Illuminate\Support\Facades\Facade;
 
 /**
  * @method static getModelFromQueue(string|null $queue)
+ * @method static runningAsHorizon()
+ * @method static getHorizon()
+ * @method static getSupervisor()
+ * @method static getQueues()
+ * @method static runningAsHorizonWork()
+ * @method static runningAsHorizonSupervisor()
+ * @method static getClassModelByQueue($queue)
  *
  * @see \NetLinker\FairQueue\FairQueue
  */

@@ -7,13 +7,9 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
-use NetLinker\FairQueue\Sections\Horizons\Repositories\HorizonRepository;
-use NetLinker\FairQueue\Sections\Horizons\Resources\Horizon;
 use NetLinker\FairQueue\Sections\Queues\Repositories\QueueRepository;
-use NetLinker\FairQueue\Sections\Queues\Resources\Queue;
 use NetLinker\FairQueue\Sections\Queues\Requests\StoreQueue;
-use NetLinker\FairQueue\Sections\Supervisors\Repositories\SupervisorRepository;
-use NetLinker\FairQueue\Sections\Supervisors\Resources\Supervisor;
+use NetLinker\FairQueue\Sections\Queues\Resources\Queue;
 
 class QueueController extends BaseController
 {

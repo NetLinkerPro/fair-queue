@@ -25,6 +25,7 @@ class CreateFairQueueSupervisorsTable extends Migration
             $table->integer('max_processes')->default(1);
             $table->integer('priority')->default(0);
             $table->boolean('active')->index()->default(false);
+            $table->integer('sleep')->default(1);
             $table->softDeletes();
             $table->timestamps();
         });

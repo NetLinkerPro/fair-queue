@@ -22,12 +22,12 @@
                 <div class="filter__rlink">
                     <context-menu button-class="filter__slink" right>
                         <template slot="toggler">
-                            <span>{{ __('fair-queue::horizons.manage') }}</span>
+                            <span>{{ __('fair-queue::general.manage') }}</span>
                         </template>
-                        <cm-link href="{{route('fair-queue.supervisors.index')}}">   {{ __('fair-queue::horizons.manage_supervisors') }}</cm-link>
-                        <cm-link href="{{route('fair-queue.queues.index')}}">   {{ __('fair-queue::horizons.manage_queues') }}</cm-link>
-                        <cm-link href="{{route('fair-queue.accesses.index')}}">   {{ __('fair-queue::horizons.manage_accesses') }}</cm-link>
-                        <cm-link href="{{route('fair-queue.job_statuses.index')}}">   {{ __('fair-queue::horizons.job_statuses') }}</cm-link>
+                        <cm-link href="{{route('fair-queue.supervisors.index')}}">   {{ __('fair-queue::general.manage_supervisors') }}</cm-link>
+                        <cm-link href="{{route('fair-queue.queues.index')}}">   {{ __('fair-queue::general.manage_queues') }}</cm-link>
+                        <cm-link href="{{route('fair-queue.accesses.index')}}">   {{ __('fair-queue::general.manage_accesses') }}</cm-link>
+                        <cm-link href="{{route('fair-queue.job_statuses.index')}}">   {{ __('fair-queue::general.manage_job_statuses') }}</cm-link>
 
                     </context-menu>
                 </div>
@@ -48,11 +48,24 @@
         <tb-column name="name" label="{{ __('fair-queue::general.name') }}" sort>
             <template slot-scope="col">
                 @{{ col.data.name }}
-            </template>
-        </tb-column>
-        <tb-column name="uuid" label="{{ __('fair-queue::general.uuid') }}" sort>
-            <template slot-scope="col">
-                @{{ col.data.uuid }}
+                <div>
+                    <small class="cl-caption">@{{ col.data.uuid }}</small>
+                </div>
+                <div >
+                    <small class="cl-caption">{{ __('fair-queue::general.launched_at') }}:</small>
+                    <small v-if="col.data.launched_at" class="cl-caption">@{{ col.data.launched_at }}</small>
+                    <small v-else class="cl-red">{{ __('fair-queue::general.no') }}</small>
+                </div>
+                <div >
+                    <small class="cl-caption">{{ __('fair-queue::general.last_work_logged_at') }}:</small>
+                     <small v-if="col.data.last_work_logged_at" class="cl-caption">
+                        <span v-if="col.data.last_work_danger" class="cl-red">@{{ col.data.last_work_logged_at }}</span>
+                        <span v-else-if="col.data.last_work_warning" class="blue-link">@{{ col.data.last_work_logged_at }}</span>
+                        <span v-else >@{{ col.data.last_work_logged_at }}</span>
+                    </small>
+
+                    <small v-else class="cl-red">{{ __('fair-queue::general.none') }}</small>
+                </div>
             </template>
         </tb-column>
         <tb-column name="active" label="{{ __('fair-queue::horizons.active') }}" sort>
@@ -92,6 +105,9 @@
                     </cm-button>
                     <cm-button @click="AWES._store.commit('setData', {param: 'deleteHorizon', data: d.data}); AWES.emit('modal::delete-horizon:open')">
                         {{ __('fair-queue::general.delete') }}
+                    </cm-button>
+                    <cm-button @click="AWES._store.commit('setData', {param: 'restartHorizon', data: d.data}); AWES.emit('modal::restart-horizon:open')">
+                        {{ __('fair-queue::horizons.restart_horizon') }}
                     </cm-button>
                 </context-menu>
             </template>
@@ -144,6 +160,21 @@
 
                 <!-- Fix enable button yes for delete -->
                 <input type="hidden" name="isEdited" :value="AWES._store.state.forms['delete-horizon']['isEdited'] = true"/>
+            </template>
+        </form-builder>
+    </modal-window>
+
+    {{--Restart horizon--}}
+    <modal-window name="restart-horizon" class="modal_formbuilder" title="{{ __('fair-queue::horizons.are_you_sure_restart_horizon') }}">
+        <form-builder name="restart-horizon" method="POST" url="{{ route('fair-queue.horizons.restart') }}" store-data="restartHorizon" @sended="AWES.emit('content::horizons_table:update')"
+                      send-text="{{ __('fair-queue::general.yes') }}"
+                      cancel-text="{{ __('fair-queue::general.no') }}"
+                      disabled-dialog>
+            <template slot-scope="block">
+
+                <fb-input name="id" type="hidden"></fb-input>
+                <!-- Fix enable button yes for restart -->
+                <input type="hidden" name="isEdited" :value="AWES._store.state.forms['restart-horizon']['isEdited'] = true"/>
             </template>
         </form-builder>
     </modal-window>

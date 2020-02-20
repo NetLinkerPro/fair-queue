@@ -10,6 +10,7 @@ return [
     'external_uuid' => 'Zewnętrzny UUID',
     'failed' => 'Błędne',
     'finished' => 'Zakończone',
+    'horizon' => 'Poziom',
     'interrupted' => 'Przerwane',
     'job' => 'Zadanie',
     'job_id' => 'ID zadania',

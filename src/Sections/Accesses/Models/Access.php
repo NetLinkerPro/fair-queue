@@ -2,11 +2,9 @@
 
 namespace NetLinker\FairQueue\Sections\Accesses\Models;
 
-use Cog\Contracts\Ownership\Ownable as OwnableContract;
-use Cog\Laravel\Ownership\Traits\HasOwner;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Auth;
+use NetLinker\FairQueue\Queues\QueueConfiguration;
 use Ramsey\Uuid\Uuid;
 
 class Access extends Model
@@ -34,7 +32,7 @@ class Access extends Model
      *
      * @var array
      */
-    public $fillable = ['uuid', 'queue_uuid','name', 'description', 'type', 'object_uuid', 'active'];
+    public $fillable = ['uuid', 'queue_uuid', 'name', 'description', 'type', 'object_uuid', 'active'];
 
     public $orderable = [];
 
@@ -50,7 +48,8 @@ class Access extends Model
         parent::boot();
 
         static::creating(function ($model) {
-                $model->uuid = Uuid::uuid4()->toString();
+            $model->uuid = Uuid::uuid4()->toString();
+
         });
 
         static::saving(function ($model) {
@@ -59,6 +58,11 @@ class Access extends Model
                 $model->uuid = $original_uuid;
             }
         });
+
+        static::saved(function ($model) {
+            QueueConfiguration::broadcastUpdated();
+        });
+
     }
 
     /**

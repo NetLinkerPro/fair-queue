@@ -2,7 +2,6 @@
 
 namespace NetLinker\FairQueue\Sections\JobStatuses\Traits;
 
-use Illuminate\Support\Facades\Auth;
 use NetLinker\FairQueue\Exceptions\FairQueueException;
 use NetLinker\FairQueue\Sections\JobStatuses\Repositories\JobStatusRepository;
 

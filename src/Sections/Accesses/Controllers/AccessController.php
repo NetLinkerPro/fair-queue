@@ -7,12 +7,9 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Support\Facades\Config;
 use NetLinker\FairQueue\Sections\Accesses\Repositories\AccessRepository;
-use NetLinker\FairQueue\Sections\Accesses\Resources\Access;
 use NetLinker\FairQueue\Sections\Accesses\Requests\StoreAccess;
-use NetLinker\FairQueue\Sections\Horizons\Models\Horizon;
-use NetLinker\FairQueue\Tests\Mocks\TestStatusJob;
+use NetLinker\FairQueue\Sections\Accesses\Resources\Access;
 
 class AccessController extends BaseController
 {

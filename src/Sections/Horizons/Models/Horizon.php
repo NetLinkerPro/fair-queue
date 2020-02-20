@@ -2,11 +2,9 @@
 
 namespace NetLinker\FairQueue\Sections\Horizons\Models;
 
-use Cog\Contracts\Ownership\Ownable as OwnableContract;
-use Cog\Laravel\Ownership\Traits\HasOwner;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Auth;
+use NetLinker\FairQueue\Queues\QueueConfiguration;
 use Ramsey\Uuid\Uuid;
 
 class Horizon extends Model
@@ -27,8 +25,13 @@ class Horizon extends Model
      * @var array
      */
     protected $casts = [
-        'active' => 'boolean',
         'memory_limit' => 'integer',
+        'trim_recent'  => 'integer',
+        'trim_recent_failed'  => 'integer',
+        'trim_failed'  => 'integer',
+        'trim_monitored'  => 'integer',
+        'active' => 'boolean',
+        'launched_at' => 'datetime',
     ];
 
     /**
@@ -36,7 +39,7 @@ class Horizon extends Model
      *
      * @var array
      */
-    public $fillable = ['uuid', 'name', 'memory_limit', 'trim_recent', 'trim_recent_failed', 'trim_failed', 'trim_monitored', 'active', 'ip'];
+    public $fillable = ['uuid', 'name', 'memory_limit', 'trim_recent', 'trim_recent_failed', 'trim_failed', 'trim_monitored', 'active', 'ip', 'launched_at'];
 
     public $orderable = [];
 
@@ -60,6 +63,10 @@ class Horizon extends Model
             if ($original_uuid !== $model->uuid) {
                 $model->uuid = $original_uuid;
             }
+        });
+
+        static::saved(function ($model) {
+            QueueConfiguration::broadcastUpdated();
         });
     }
 

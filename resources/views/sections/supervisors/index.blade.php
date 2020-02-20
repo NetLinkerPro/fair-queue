@@ -22,12 +22,12 @@
                 <div class="filter__rlink">
                     <context-menu button-class="filter__slink" right>
                         <template slot="toggler">
-                            <span>{{ __('fair-queue::supervisors.manage') }}</span>
+                            <span>{{ __('fair-queue::general.manage') }}</span>
                         </template>
-                        <cm-link href="{{route('fair-queue.horizons.index')}}">   {{ __('fair-queue::supervisors.manage_horizons') }}</cm-link>
-                        <cm-link href="{{route('fair-queue.queues.index')}}">   {{ __('fair-queue::supervisors.manage_queues') }}</cm-link>
-                        <cm-link href="{{route('fair-queue.accesses.index')}}">   {{ __('fair-queue::supervisors.manage_accesses') }}</cm-link>
-                        <cm-link href="{{route('fair-queue.job_statuses.index')}}">   {{ __('fair-queue::supervisors.job_statuses') }}</cm-link>
+                        <cm-link href="{{route('fair-queue.horizons.index')}}">   {{ __('fair-queue::general.manage_horizons') }}</cm-link>
+                        <cm-link href="{{route('fair-queue.queues.index')}}">   {{ __('fair-queue::general.manage_queues') }}</cm-link>
+                        <cm-link href="{{route('fair-queue.accesses.index')}}">   {{ __('fair-queue::general.manage_accesses') }}</cm-link>
+                        <cm-link href="{{route('fair-queue.job_statuses.index')}}">   {{ __('fair-queue::general.manage_job_statuses') }}</cm-link>
                     </context-menu>
                 </div>
             </div>
@@ -39,7 +39,7 @@
         'name' => 'supervisors_table',
         'row_url'=> '',
         'scope_api_url' => route('fair-queue.supervisors.scope'),
-        'scope_api_params' => []
+        'scope_api_params' => ['orderBy']
         ])
         <template slot="header">
             <h3>{{__('fair-queue::supervisors.supervisor_list') }}</h3>
@@ -47,7 +47,18 @@
 
         <tb-column name="name" label="{{ __('fair-queue::general.name') }}" sort>
             <template slot-scope="col">
-                @{{ col.data.name }}
+                <div>@{{ col.data.name }}</div>
+                <small class="cl-caption">@{{ col.data.uuid }}</small>
+                <div >
+                    <small class="cl-caption">{{ __('fair-queue::general.last_work_logged_at') }}:</small>
+                    <small v-if="col.data.last_work_logged_at" class="cl-caption">
+                        <span v-if="col.data.last_work_danger" class="cl-red">@{{ col.data.last_work_logged_at }}</span>
+                        <span v-else-if="col.data.last_work_warning" class="blue-link">@{{ col.data.last_work_logged_at }}</span>
+                        <span v-else >@{{ col.data.last_work_logged_at }}</span>
+                    </small>
+
+                    <small v-else class="cl-red">{{ __('fair-queue::general.none') }}</small>
+                </div>
             </template>
         </tb-column>
         <tb-column name="environment" label="{{ __('fair-queue::supervisors.environment') }}" sort>
@@ -81,7 +92,11 @@
                 @{{ col.data.priority }}
             </template>
         </tb-column>
-        
+        <tb-column name="sleep" label="{{ __('fair-queue::supervisors.sleep') }}" sort>
+            <template slot-scope="col">
+                @{{ col.data.sleep }}
+            </template>
+        </tb-column>
         <tb-column name="active" label="{{ __('fair-queue::supervisors.active') }}" sort>
             <template slot-scope="col">
                 <span v-if="col.data.active">{{ __('fair-queue::general.yes') }}</span>
@@ -124,6 +139,7 @@
                 <fb-input type="number" name="min_processes" label="{{ __('fair-queue::supervisors.min_processes') }}"></fb-input>
                 <fb-input type="number" name="max_processes" label="{{ __('fair-queue::supervisors.max_processes') }}"></fb-input>
                 <fb-input type="number" name="priority" label="{{ __('fair-queue::supervisors.priority') }}"></fb-input>
+                <fb-input type="number" name="sleep" label="{{ __('fair-queue::supervisors.sleep') }}"></fb-input>
                 <fb-switcher name="active" label="{{ __('fair-queue::supervisors.active') }}"></fb-switcher>
             </div>
         </form-builder>
@@ -141,6 +157,7 @@
             <fb-input type="number" name="min_processes" label="{{ __('fair-queue::supervisors.min_processes') }}"></fb-input>
             <fb-input type="number" name="max_processes" label="{{ __('fair-queue::supervisors.max_processes') }}"></fb-input>
             <fb-input type="number" name="priority" label="{{ __('fair-queue::supervisors.priority') }}"></fb-input>
+            <fb-input type="number" name="sleep" label="{{ __('fair-queue::supervisors.sleep') }}"></fb-input>
             <fb-switcher name="active" label="{{ __('fair-queue::supervisors.active') }}"></fb-switcher>
         </form-builder>
     </modal-window>

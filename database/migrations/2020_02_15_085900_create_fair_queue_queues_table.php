@@ -25,6 +25,8 @@ class CreateFairQueueQueuesTable extends Migration
             $table->integer('refresh_max_model_id')->default(60);
             $table->softDeletes();
             $table->timestamps();
+
+            $table->unique(['queue', 'supervisor_uuid'], 'fqq_queue_supervisor_uuid');
         });
     }
 

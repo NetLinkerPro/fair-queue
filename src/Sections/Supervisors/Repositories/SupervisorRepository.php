@@ -3,11 +3,8 @@
 namespace NetLinker\FairQueue\Sections\Supervisors\Repositories;
 
 use AwesIO\Repository\Eloquent\BaseRepository;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 use NetLinker\FairQueue\Sections\Supervisors\Models\Supervisor;
 use NetLinker\FairQueue\Sections\Supervisors\Scopes\SupervisorScopes;
-use NetLinker\FairQueue\Tests\Stubs\User;
 
 class SupervisorRepository extends BaseRepository
 {

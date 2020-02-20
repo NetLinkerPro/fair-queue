@@ -2,11 +2,10 @@
 
 namespace NetLinker\FairQueue\Listeners;
 
-use Illuminate\Support\Facades\Request;
 use NetLinker\FairQueue\Exceptions\FairQueueException;
-use NetLinker\FairQueue\FairQueue;
+use NetLinker\FairQueue\Facades\FairQueue;
 
-class CheckHorizonUuid
+class HorizonUuidCheck
 {
 
     /**
@@ -20,8 +19,14 @@ class CheckHorizonUuid
     {
         $horizonUuid = config('fair-queue.horizon_uuid');
 
-        if (!$horizonUuid){
+        if (!$horizonUuid) {
             throw new FairQueueException('Not found horizon UUID in configuration');
+        }
+
+        $horizon = FairQueue::getHorizon();
+
+        if (!$horizon) {
+            throw new FairQueueException('Not found horizon in database for UUID: ' . $horizonUuid);
         }
     }
 }

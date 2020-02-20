@@ -22,12 +22,12 @@
                 <div class="filter__rlink">
                     <context-menu button-class="filter__slink" right>
                         <template slot="toggler">
-                            <span>{{ __('fair-queue::accesses.manage') }}</span>
+                            <span>{{ __('fair-queue::general.manage') }}</span>
                         </template>
-                        <cm-link href="{{route('fair-queue.horizons.index')}}">   {{ __('fair-queue::accesses.manage_horizons') }}</cm-link>
-                        <cm-link href="{{route('fair-queue.supervisors.index')}}">   {{ __('fair-queue::accesses.manage_supervisors') }}</cm-link>
-                        <cm-link href="{{route('fair-queue.queues.index')}}">   {{ __('fair-queue::accesses.manage_queues') }}</cm-link>
-                        <cm-link href="{{route('fair-queue.job_statuses.index')}}">   {{ __('fair-queue::horizons.job_statuses') }}</cm-link>
+                        <cm-link href="{{route('fair-queue.horizons.index')}}">   {{ __('fair-queue::general.manage_horizons') }}</cm-link>
+                        <cm-link href="{{route('fair-queue.supervisors.index')}}">   {{ __('fair-queue::general.manage_supervisors') }}</cm-link>
+                        <cm-link href="{{route('fair-queue.queues.index')}}">   {{ __('fair-queue::general.manage_queues') }}</cm-link>
+                        <cm-link href="{{route('fair-queue.job_statuses.index')}}">   {{ __('fair-queue::general.manage_job_statuses') }}</cm-link>
                     </context-menu>
                 </div>
             </div>
@@ -143,13 +143,10 @@
             <fb-input type="hidden" name="queue_uuid"></fb-input>
             <fb-input type="hidden" name="queue_uuid"></fb-input>
             <fb-input type="hidden" name="object_uuid"></fb-input>
+            <fb-input type="hidden" name="type"></fb-input>
 
             <fb-input name="name" label="{{ __('fair-queue::general.name') }}"></fb-input>
             <fb-textarea name="description" label="{{ __('fair-queue::general.description') }}"></fb-textarea>
-
-            <fb-select name="type" label="{{ __('fair-queue::general.type') }}"
-                       :select-options="[{name: '{{ __('fair-queue::accesses.allow') }}', value:'allow'}, {name: '{{ __('fair-queue::accesses.exclude') }}', value:'exclude'}]"
-                       options-value="value" options-name="name" :multiple="false" placeholder-text=" "></fb-select>
 
             <fb-switcher name="active" label="{{ __('fair-queue::accesses.active') }}"></fb-switcher>
 

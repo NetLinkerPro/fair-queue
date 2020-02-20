@@ -8,8 +8,8 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use NetLinker\FairQueue\Sections\Supervisors\Repositories\SupervisorRepository;
-use NetLinker\FairQueue\Sections\Supervisors\Resources\Supervisor;
 use NetLinker\FairQueue\Sections\Supervisors\Requests\StoreSupervisor;
+use NetLinker\FairQueue\Sections\Supervisors\Resources\Supervisor;
 
 class SupervisorController extends BaseController
 {

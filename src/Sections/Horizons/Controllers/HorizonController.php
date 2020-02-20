@@ -7,9 +7,12 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
+use NetLinker\FairQueue\HorizonManager;
 use NetLinker\FairQueue\Sections\Horizons\Repositories\HorizonRepository;
-use NetLinker\FairQueue\Sections\Horizons\Resources\Horizon;
+use NetLinker\FairQueue\Sections\Horizons\Requests\RestartHorizon;
 use NetLinker\FairQueue\Sections\Horizons\Requests\StoreHorizon;
+use NetLinker\FairQueue\Sections\Horizons\Resources\Horizon;
+use NetLinker\FairQueue\Sections\JobStatuses\Repositories\JobStatusRepository;
 
 class HorizonController extends BaseController
 {
@@ -19,14 +22,19 @@ class HorizonController extends BaseController
     /** @var HorizonRepository $horizons */
     protected $horizons;
 
+    /** @var JobStatusRepository $jobStatuses */
+    protected $jobStatuses;
+
     /**
      * Constructor
      *
      * @param HorizonRepository $horizons
+     * @param JobStatusRepository $jobStatuses
      */
-    public function __construct(HorizonRepository $horizons)
+    public function __construct(HorizonRepository $horizons, JobStatusRepository $jobStatuses)
     {
         $this->horizons = $horizons;
+        $this->jobStatuses = $jobStatuses;
     }
 
     /**
@@ -56,7 +64,6 @@ class HorizonController extends BaseController
                 ->latest()->smartPaginate()
         );
     }
-
 
 
     /**
@@ -102,4 +109,28 @@ class HorizonController extends BaseController
         return notify(__('fair-queue::horizons.horizon_was_successfully_deleted'));
     }
 
+    /**
+     * Restart store
+     *
+     * @param RestartHorizon $request
+     * @return array
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    public function restart(RestartHorizon $request)
+    {
+
+        if ($this->horizons->isActive($request->id)) {
+            return response()->json(['message' => __('fair-queue::horizons.cannot_restart_active_horizon')], 400, [], JSON_UNESCAPED_UNICODE);
+        }
+
+        $horizonUuid = $this->horizons->getUuid($request->id);
+
+        if ($this->jobStatuses->countExecutingByHorizon($horizonUuid)) {
+            return response()->json(['message' => __('fair-queue::horizons.cannot_restart_executing_horizon')], 400, [], JSON_UNESCAPED_UNICODE);
+        }
+
+        HorizonManager::broadcastKill($horizonUuid);
+
+        return notify(__('fair-queue::horizons.horizon_was_successfully_restarted'));
+    }
 }

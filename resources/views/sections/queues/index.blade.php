@@ -22,12 +22,12 @@
                 <div class="filter__rlink">
                     <context-menu button-class="filter__slink" right>
                         <template slot="toggler">
-                            <span>{{ __('fair-queue::queues.manage') }}</span>
+                            <span>{{ __('fair-queue::general.manage') }}</span>
                         </template>
-                        <cm-link href="{{route('fair-queue.horizons.index')}}">   {{ __('fair-queue::queues.manage_horizons') }}</cm-link>
-                        <cm-link href="{{route('fair-queue.supervisors.index')}}">   {{ __('fair-queue::queues.manage_supervisors') }}</cm-link>
-                        <cm-link href="{{route('fair-queue.accesses.index')}}">   {{ __('fair-queue::queues.manage_accesses') }}</cm-link>
-                        <cm-link href="{{route('fair-queue.job_statuses.index')}}">   {{ __('fair-queue::queues.job_statuses') }}</cm-link>
+                        <cm-link href="{{route('fair-queue.horizons.index')}}">   {{ __('fair-queue::general.manage_horizons') }}</cm-link>
+                        <cm-link href="{{route('fair-queue.supervisors.index')}}">   {{ __('fair-queue::general.manage_supervisors') }}</cm-link>
+                        <cm-link href="{{route('fair-queue.accesses.index')}}">   {{ __('fair-queue::general.manage_accesses') }}</cm-link>
+                        <cm-link href="{{route('fair-queue.job_statuses.index')}}">   {{ __('fair-queue::general.manage_job_statuses') }}</cm-link>
                     </context-menu>
                 </div>
             </div>
@@ -39,17 +39,27 @@
         'name' => 'queues_table',
         'row_url'=> '',
         'scope_api_url' => route('fair-queue.queues.scope'),
-        'scope_api_params' => []
+        'scope_api_params' => ['orderBy']
         ])
         <template slot="header">
             <h3>{{__('fair-queue::queues.queue_list') }}</h3>
         </template>
-        <tb-column name="no_field_horizon" label="{{ __('fair-queue::queues.horizon') }}" sort>
+        <tb-column name="no_field_horizon" label="{{ __('fair-queue::queues.horizon') }}">
             <template slot-scope="col">
                  @{{ col.data.horizon.name }}
+                <div >
+                    <small class="cl-caption">{{ __('fair-queue::general.last_work_logged_at') }}:</small>
+                    <small v-if="col.data.last_work_logged_at" class="cl-caption">
+                        <span v-if="col.data.last_work_danger" class="cl-red">@{{ col.data.last_work_logged_at }}</span>
+                        <span v-else-if="col.data.last_work_warning" class="blue-link">@{{ col.data.last_work_logged_at }}</span>
+                        <span v-else >@{{ col.data.last_work_logged_at }}</span>
+                    </small>
+
+                    <small v-else class="cl-red">{{ __('fair-queue::general.none') }}</small>
+                </div>
             </template>
         </tb-column>
-        <tb-column name="no_field_supervisor" label="{{ __('fair-queue::queues.supervisor') }}" sort>
+        <tb-column name="no_field_supervisor" label="{{ __('fair-queue::queues.supervisor') }}">
             <template slot-scope="col">
                 @{{ col.data.supervisor.name }}
             </template>
@@ -62,6 +72,7 @@
         <tb-column name="queue" label="{{ __('fair-queue::queues.queue') }}" sort>
             <template slot-scope="col">
                <small> @{{ col.data.queue }}</small>
+                <div><small class="cl-caption">@{{ col.data.uuid }}</small> </div>
             </template>
         </tb-column>
         <tb-column name="refresh_max_model_id" label="{{ __('fair-queue::queues.refresh_max_model_id') }}" sort>

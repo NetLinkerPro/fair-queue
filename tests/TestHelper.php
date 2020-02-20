@@ -144,28 +144,6 @@ trait TestHelper
         $app['config']->set('queue.default', 'fair-queue');
         $app['config']->set('fair-queue.models.user', 'NetLinker\FairQueue\Tests\Stubs\User');
         $app['config']->set('fair-queue.models.owner', 'NetLinker\FairQueue\Tests\Stubs\Owner');
-        $app['config']->set('fair-queue.default_instance_config.queues.prestashop_update', [
-            'user' => [
-                'active' => true,
-                'refresh_max_id' => 1,
-                'allow_ids' => [],
-                'exclude_ids' => [],
-            ]
-        ]);
-        $app['config']->set('fair-queue.default_instance_config.queues.test_status', [
-            'owner' => [
-                'active' => true,
-                'refresh_max_id' => 1,
-                'allow_ids' => [],
-                'exclude_ids' => [],
-            ]
-        ]);
-
-        $app['config']->set('fair-queue.instance_uuid', Str::uuid());
-
-        $app['config']->set('queue.connections.fair-queue', [
-            'driver' => 'fair-queue',
-        ]);
 
         $app['config']->set('queue.failed.database', 'testbench');
 

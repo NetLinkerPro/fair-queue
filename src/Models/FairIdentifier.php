@@ -16,8 +16,11 @@ class FairIdentifier
      * @return bool|int
      * @throws \NetLinker\FairQueue\Exceptions\FairQueueException
      * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
-    public static function get(string $model, string $queue = 'default'){
+    public static function get(string $model, string $queue = null){
+
+        $queue = $queue ?? config('fair-queue.default_queue');
 
         $maxId = IdentifierModel::maxId($model, $queue);
 

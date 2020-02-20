@@ -32,7 +32,9 @@
         "awes-io/filter-wrapper": "^1.1",
         "predis/predis": "^1.1",
         "laravel/horizon": "^3.6",
-        "doctrine/dbal": "^2.10"
+        "doctrine/dbal": "^2.10",
+      "ext-posix": "*",
+        "ext-pcntl": "*"
     },
     "require-dev": {
         "brainmaestro/composer-git-hooks": "^2.8",

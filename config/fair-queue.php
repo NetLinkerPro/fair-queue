@@ -31,41 +31,6 @@ return [
 
     /*
      |--------------------------------------------------------------------------
-     | Unique identify instance laravel
-     |--------------------------------------------------------------------------
-     */
-    'instance_uuid' => env('INSTANCE_UUID', ''),
-
-    /*
-     |--------------------------------------------------------------------------
-     | Default config instance laravel
-     |--------------------------------------------------------------------------
-     */
-    'default_instance_config' => [
-
-        'active' => true,
-
-        'queues' =>[
-
-            'default' => [
-
-                'user' => [ // model name
-
-                    'active' => true,
-
-                    'refresh_max_id' => 60, // seconds
-
-                    'allow_ids' => [],
-
-                    'exclude_ids' => [],
-
-                ]
-            ]
-        ]
-    ],
-
-    /*
-     |--------------------------------------------------------------------------
      | Cache store
      |--------------------------------------------------------------------------
      */
@@ -146,4 +111,86 @@ return [
 
         'accesses' => 'NetLinker\FairQueue\Sections\Accesses\Controllers\AccessController',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Horizon Redis Connection
+    |--------------------------------------------------------------------------
+    |
+    | This is the name of the Redis connection where Horizon will store the
+    | meta information required for it to function. It includes the list
+    | of supervisors, failed jobs, job metrics, and other information.
+    |
+    */
+
+    'horizon_use' => 'default',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Fair queue Redis Connection
+    |--------------------------------------------------------------------------
+    |
+    | This is the name of the Redis connection where Laravel will store
+    | the jobs.
+    |
+    */
+
+    'connection' => 'default',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Default queue
+    |--------------------------------------------------------------------------
+    |
+    | This is the name of the queue where will push jobs without name queue.
+    |
+    */
+
+    'default_queue' => 'test_job',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Retry after
+    |--------------------------------------------------------------------------
+    |
+    | Value to the maximum number of seconds your jobs should reasonably
+    | take to complete processing
+    |
+    */
+
+    'retry_after' => 172800,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Block for
+    |--------------------------------------------------------------------------
+    |
+    | Configuration option to specify how long the driver should wait for a
+    | job to become available before iterating through the worker loop and
+    | re-polling the Redis database.
+    |
+    */
+
+    'block_for' => null,
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | System work danger
+    |--------------------------------------------------------------------------
+    |
+    | Seconds for show status danger for work system in front manage.
+    |
+    */
+    'system_work_danger' => 3600,
+
+    /*
+    |--------------------------------------------------------------------------
+    | System work warning
+    |--------------------------------------------------------------------------
+    |
+    | Seconds for show status warning for work system in front manage.
+    |
+    */
+    'system_work_warning' => 60,
 ];

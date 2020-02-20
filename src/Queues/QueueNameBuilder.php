@@ -6,7 +6,6 @@ namespace NetLinker\FairQueue\Queues;
 
 use Illuminate\Support\Str;
 use NetLinker\FairQueue\Exceptions\FairQueueException;
-use NetLinker\FairQueue\Models\ModelKey;
 
 class QueueNameBuilder
 {
@@ -33,7 +32,9 @@ class QueueNameBuilder
      * @param string $queue
      * @return string
      */
-    public static function buildNameWithModelKey($modelKey, $queue = 'default'){
+    public static function buildNameWithModelKey($modelKey, $queue = null){
+
+        $queue = $queue ?? config('fair-queue.default_queue');
 
         if (Str::endsWith($queue, ':' . $modelKey)){
             return $queue;

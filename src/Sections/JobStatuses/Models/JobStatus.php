@@ -61,7 +61,7 @@ class JobStatus extends Model implements OwnableContract
      * @var array
      */
     public $fillable = ['uuid', 'owner_uuid', 'job_id', 'type', 'external_uuid', 'queue', 'attempts', 'progress_now', 'progress_max', 'interrupt',
-        'status', 'input', 'output', 'started_at', 'finished_at', 'logs', 'error', 'name'];
+        'status', 'input', 'output', 'started_at', 'finished_at', 'logs', 'error', 'name', 'horizon_uuid'];
 
     public $orderable = ['job_id', 'queue', 'type', 'name'];
 

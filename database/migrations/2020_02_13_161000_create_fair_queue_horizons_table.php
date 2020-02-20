@@ -25,6 +25,7 @@ class CreateFairQueueHorizonsTable extends Migration
             $table->integer('trim_monitored')->default(2880);
             $table->boolean('active')->index()->default(false);
             $table->string('ip')->index()->nullable();
+            $table->dateTime('launched_at')->index()->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

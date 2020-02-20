@@ -23,6 +23,7 @@ class CreateFairQueueJobStatusesTable extends Migration
             $table->string('type')->index();
             $table->boolean('interrupt')->default(false);
             $table->string('external_uuid', 36)->index()->nullable();
+            $table->string('horizon_uuid', 36)->index()->nullable();
             $table->string('queue')->index()->nullable();
             $table->integer('attempts')->default(0);
             $table->integer('progress_now')->default(0);

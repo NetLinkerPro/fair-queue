@@ -2,11 +2,9 @@
 
 namespace NetLinker\FairQueue\Sections\Supervisors\Models;
 
-use Cog\Contracts\Ownership\Ownable as OwnableContract;
-use Cog\Laravel\Ownership\Traits\HasOwner;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Auth;
+use NetLinker\FairQueue\Queues\QueueConfiguration;
 use Ramsey\Uuid\Uuid;
 
 class Supervisor extends Model
@@ -30,6 +28,7 @@ class Supervisor extends Model
         'active' => 'boolean',
         'min_processes' => 'integer',
         'max_processes' => 'integer',
+        'sleep' =>'integer',
         'priority' => 'integer',
     ];
 
@@ -38,9 +37,9 @@ class Supervisor extends Model
      *
      * @var array
      */
-    public $fillable = ['uuid', 'name', 'environment', 'connection', 'balance', 'min_processes', 'max_processes', 'priority', 'active'];
+    public $fillable = ['uuid', 'name', 'environment', 'connection', 'balance', 'min_processes', 'max_processes', 'priority', 'active', 'sleep'];
 
-    public $orderable = [];
+    public $orderable = ['name', 'environment', 'connection', 'balance', 'min_processes', 'max_processes', 'priority', 'active', 'sleep'];
 
     protected $encryptable = [];
 
@@ -62,6 +61,10 @@ class Supervisor extends Model
             if ($original_uuid !== $model->uuid) {
                 $model->uuid = $original_uuid;
             }
+        });
+
+        static::saved(function ($model) {
+            QueueConfiguration::broadcastUpdated();
         });
     }
 

@@ -2,7 +2,7 @@
 
 namespace NetLinker\FairQueue\Events;
 
-class WorkerStarting
+class HorizonBooting
 {
 
 }

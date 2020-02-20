@@ -30,6 +30,18 @@
                 <div class="filter__rlink">
                     <context-menu button-class="filter__slink" right>
                         <template slot="toggler">
+                            <span>{{ __('fair-queue::general.manage') }}</span>
+                        </template>
+                        <cm-link href="{{route('fair-queue.supervisors.index')}}">   {{ __('fair-queue::general.manage_horizons') }}</cm-link>
+                        <cm-link href="{{route('fair-queue.supervisors.index')}}">   {{ __('fair-queue::general.manage_supervisors') }}</cm-link>
+                        <cm-link href="{{route('fair-queue.queues.index')}}">   {{ __('fair-queue::general.manage_queues') }}</cm-link>
+                        <cm-link href="{{route('fair-queue.accesses.index')}}">   {{ __('fair-queue::general.manage_accesses') }}</cm-link>
+
+                    </context-menu>
+                </div>
+                <div class="filter__rlink">
+                    <context-menu button-class="filter__slink" right>
+                        <template slot="toggler">
                             <span>{{  __('fair-queue::general.sort_by') }}</span>
                         </template>
                         <cm-query :param="{orderBy: 'name'}">{{  __('fair-queue::general.name') }} &uarr;
@@ -108,14 +120,16 @@
         </tb-column>
         <tb-column name="type" label="{{ __('fair-queue::general.type') }}" sort>
             <template slot-scope="col">
-                <div style="max-width: 150px; overflow-wrap: break-word;">
+                <div style="max-width: 80px; overflow-wrap: break-word;">
                     <small class="cl-caption">@{{ col.data.type }}</small>
                 </div>
             </template>
         </tb-column>
         <tb-column name="queue" label="{{ __('fair-queue::job-statuses.queue') }}" sort>
             <template slot-scope="col">
-                <small class="cl-caption">@{{ col.data.queue }}</small>
+                <div style="max-width: 80px; overflow-wrap: break-word;">
+                    <small class="cl-caption">@{{ col.data.queue }}</small>
+                </div>
             </template>
         </tb-column>
         <tb-column name="progress_percentage" label="{{ __('fair-queue::job-statuses.progress_percentage') }}">
@@ -157,6 +171,13 @@
                            {{ __('fair-queue::general.error') }}
                        </a>
                    </small>
+                </div>
+            </template>
+        </tb-column>
+        <tb-column name="started_at" label="{{ __('fair-queue::job-statuses.horizon') }}">
+            <template slot-scope="col">
+                <div v-if="col.data.horizon">
+                    <small class="cl-caption">@{{ col.data.horizon.name }}</small>
                 </div>
             </template>
         </tb-column>

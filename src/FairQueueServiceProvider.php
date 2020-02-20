@@ -21,7 +21,7 @@ use NetLinker\FairQueue\Sections\JobStatuses\Repositories\JobStatusRepository;
 class FairQueueServiceProvider extends ServiceProvider
 {
 
-    use EventMap;
+    use EventMap, EventListenerSupervisor, EventListenerHorizon, EventListenerQueue;
 
     /**
      * Perform post-registration booting of services.
@@ -43,6 +43,14 @@ class FairQueueServiceProvider extends ServiceProvider
 
         // Publishing is only necessary when using the CLI.
         if ($this->app->runningInConsole()) {
+
+
+            $this->registerEventListenerHorizon();
+
+            $this->registerEventListenerSupervisor();
+
+            $this->registerEventListenerQueue();
+
             $this->bootForConsole();
         }
     }
@@ -124,6 +132,14 @@ class FairQueueServiceProvider extends ServiceProvider
      */
     private function registerFairQueueConnector()
     {
+        Config::set('queue.connections.fair-queue', [
+            'driver' => 'fair-queue',
+            'connection' => config('fair-queue.connection'),
+            'queue' => config('fair-queue.default_queue'),
+            'retry_after' => config('fair-queue.retry_after'),
+            'block_for' => config('fair-queue.block_for'),
+        ]);
+
         $this->app->resolving(QueueManager::class, function ($manager) {
             $manager->addConnector('fair-queue', function () {
                 return new FairQueueConnector($this->app['redis']);
@@ -141,11 +157,16 @@ class FairQueueServiceProvider extends ServiceProvider
 
         // Add Event listeners
         app(QueueManager::class)->before(function (JobProcessing $event) use ($entityClass) {
+
+            /** @var HorizonManager $horizonManager */
+            $horizonManager = app()->make(HorizonManager::class);
+
             $this->updateJobStatus($event->job, [
                 'status' => $entityClass::STATUS_EXECUTING,
                 'job_id' => $event->job->getJobId(),
                 'queue' => $event->job->getQueue(),
-                'started_at' => Carbon::now()
+                'started_at' => Carbon::now(),
+                'horizon_uuid' => $horizonManager->horizon->uuid,
             ]);
         });
         app(QueueManager::class)->after(function (JobProcessed $event) use ($entityClass) {

@@ -4,13 +4,11 @@ namespace NetLinker\FairQueue\Sections\Accesses\Repositories;
 
 use AwesIO\Repository\Eloquent\BaseRepository;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 use NetLinker\FairQueue\Exceptions\FairQueueException;
 use NetLinker\FairQueue\FairQueue;
 use NetLinker\FairQueue\Sections\Accesses\Models\Access;
 use NetLinker\FairQueue\Sections\Accesses\Scopes\AccessScopes;
 use NetLinker\FairQueue\Sections\Queues\Models\Queue;
-use NetLinker\FairQueue\Tests\Stubs\User;
 
 class AccessRepository extends BaseRepository
 {
