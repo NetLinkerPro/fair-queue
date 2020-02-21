@@ -67,6 +67,9 @@ class QueueConfiguration
         app()->make(QueueConfiguration::class);
     }
 
+    /**
+     * Load accesses
+     */
     private function loadAccesses()
     {
         foreach ($this->queues as $queue){
@@ -115,7 +118,7 @@ class QueueConfiguration
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
-    public static function listenUpdated()
+    public static function listen()
     {
         /** @var QueueConfiguration $config */
         $config = app()->make(QueueConfiguration::class);

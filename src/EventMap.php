@@ -25,5 +25,14 @@ trait EventMap
             \NetLinker\FairQueue\Listeners\QueueConfigurationLoad::class,
             \NetLinker\FairQueue\Listeners\HorizonManagerLoad::class,
         ],
+        \NetLinker\FairQueue\Events\QueueFairJobFinding::class => [
+            \NetLinker\FairQueue\Listeners\HorizonManagerListening::class,
+            \NetLinker\FairQueue\Listeners\QueueConfigurationListening::class,
+            \NetLinker\FairQueue\Listeners\SystemWorkLogging::class,
+        ],
+        \NetLinker\FairQueue\Events\QueuePopping::class => [
+            \NetLinker\FairQueue\Listeners\HorizonManagerInitializing::class,
+            \NetLinker\FairQueue\Listeners\QueueConfigurationInitializing::class,
+        ],
     ];
 }

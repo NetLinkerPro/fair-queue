@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
 use Laravel\Horizon\Events\JobReserved;
 use Laravel\Horizon\RedisQueue;
+use NetLinker\FairQueue\Events\QueuePopping;
+use NetLinker\FairQueue\Events\QueueFairJobFinding;
 use NetLinker\FairQueue\Facades\FairQueue;
 use NetLinker\FairQueue\HorizonManager;
 use NetLinker\FairQueue\Models\FairIdentifier;
@@ -50,20 +52,11 @@ class FairQueueDriver extends RedisQueue
     public function pop($queue = null)
     {
 
-
-        HorizonManager::init();
-
-        QueueConfiguration::init();
-
-
-        /** @var QueueConfiguration $config */
-        $config = app()->make(QueueConfiguration::class);
-
-      //  dump('pop: ' . now()->toString() . ' ' . $config->queue->uuid . ' ' . $queue );
+        event(new QueuePopping($queue));
 
         $model = FairQueue::getModelFromQueue($queue);
 
-        $job = $this->findFairPop($model, $queue);
+        $job = $this->findFairJob($model, $queue);
 
         return tap($job, function ($result) use ($queue) {
             if ($result) {
@@ -107,7 +100,7 @@ class FairQueueDriver extends RedisQueue
     }
 
     /**
-     * Find fair pop
+     * Find fair job
      *
      * @param $model
      * @param string $queue
@@ -116,7 +109,7 @@ class FairQueueDriver extends RedisQueue
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
-    public function findFairPop($model, $queue = null)
+    public function findFairJob($model, $queue = null)
     {
         $queue = $queue ?? config('fair-queue.default_queue');
 
@@ -124,9 +117,7 @@ class FairQueueDriver extends RedisQueue
 
         while (!$res) {
 
-            HorizonManager::listen();
-            QueueConfiguration::listenUpdated();
-            SystemWorkLogger::log($queue);
+            event(new QueueFairJobFinding($queue));
 
             $fairId = FairIdentifier::get($model, $queue);
 
