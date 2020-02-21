@@ -57,4 +57,4 @@ license. Please see the [license file](license.md) for more information.
 [link-styleci]: https://styleci.io/repos/12345678
 [link-author]: https://github.com/netlinker
 [link-contributors]: ../../contributors
-[link-documentation]: https://netlinker.pro/docs/modules/fair-queue
+[link-documentation]: ./docs/usage.md
