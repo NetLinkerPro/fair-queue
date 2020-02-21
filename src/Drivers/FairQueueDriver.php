@@ -35,10 +35,10 @@ class FairQueueDriver extends RedisQueue
         $queue = $queue ?? config('fair-queue.default_queue');
 
         $model = ModelKey::get($queue);
+        $size = $this->incrementQueueSize($queue, $model);
+
         $modelId = $job->modelId ?? 0;
         $queue = QueueNameBuilder::build($queue, $model, $modelId);
-
-        $this->incrementQueueSize($queue, $model);
 
         return parent::push($job, $data, $queue);
     }
@@ -136,29 +136,17 @@ class FairQueueDriver extends RedisQueue
 
             $res = parent::pop($queueName);
 
-            $isEmptyQueue = false;
-
-            if ($res){
-                $isEmptyQueue = $this->decrementQueueSize($queue, $model) <= 0;
-            }
+            $isEmptyQueue = $this->queueSize($queue, $model) <= 0;
 
             if (!$res && $isEmptyQueue) {
+                break;
+            } elseif ($res) {
+                $this->decrementQueueSize($queue, $model) <= 0;
                 break;
             }
 
         }
         return $res;
-    }
-
-    /**
-     * Is empty queue
-     *
-     * @param $queue
-     * @return bool
-     */
-    private function isEmptyQueue($queue)
-    {
-        return Queue::size($queue) <= 0;
     }
 
     /**
@@ -171,7 +159,7 @@ class FairQueueDriver extends RedisQueue
     private function isAllowPop(int $modelId, $queue): bool
     {
 
-        if (!QueueConfiguration::isQueueActive($queue)){
+        if (!QueueConfiguration::isQueueActive($queue)) {
             return null;
         }
 
@@ -203,7 +191,8 @@ class FairQueueDriver extends RedisQueue
      */
     private function incrementQueueSize(string $queue, string $model)
     {
-        $key = sprintf('fair-queue.queue_size.%1$s:%2$s', $queue, $model);
+        $queueWithModel = QueueNameBuilder::buildNameWithModelKey($model, $queue);
+        $key = sprintf('fair-queue.queue_size.%1$s', $queueWithModel);
         return Cache::store(config('fair-queue.cache_store'))->increment($key);
     }
 
@@ -216,7 +205,23 @@ class FairQueueDriver extends RedisQueue
      */
     private function decrementQueueSize(string $queue, string $model)
     {
-        $key = sprintf('fair-queue.queue_size.%1$s:%2$s', $queue, $model);
+        $queueWithModel = QueueNameBuilder::buildNameWithModelKey($model, $queue);
+        $key = sprintf('fair-queue.queue_size.%1$s', $queueWithModel);
         return Cache::store(config('fair-queue.cache_store'))->decrement($key);
+    }
+
+    /**
+     * Queue size
+     *
+     * @param string $queue
+     * @param string $model
+     * @return bool|int
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    private function queueSize(string $queue, string $model)
+    {
+        $queueWithModel = QueueNameBuilder::buildNameWithModelKey($model, $queue);
+        $key = sprintf('fair-queue.queue_size.%1$s', $queueWithModel);
+        return Cache::store(config('fair-queue.cache_store'))->get($key, 0);
     }
 }
