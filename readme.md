@@ -16,6 +16,7 @@ $ composer require netlinker/fair-queue
 ## Usage
 
 Documentation location is [here][link-documentation-usage]
+
 Documentation for use in package is [here][link-documentation-package]
 
 ## Change log

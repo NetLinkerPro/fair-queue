@@ -2,6 +2,7 @@
 
 namespace NetLinker\FairQueue\Drivers;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
 use Laravel\Horizon\Events\JobReserved;
@@ -33,9 +34,11 @@ class FairQueueDriver extends RedisQueue
     {
         $queue = $queue ?? config('fair-queue.default_queue');
 
-        $modelKey = ModelKey::get($queue);
+        $model = ModelKey::get($queue);
         $modelId = $job->modelId ?? 0;
-        $queue = QueueNameBuilder::build($queue, $modelKey, $modelId);
+        $queue = QueueNameBuilder::build($queue, $model, $modelId);
+
+        $this->incrementQueueSize($queue, $model);
 
         return parent::push($job, $data, $queue);
     }
@@ -133,7 +136,13 @@ class FairQueueDriver extends RedisQueue
 
             $res = parent::pop($queueName);
 
-            if (!$res && $this->isEmptyQueue($queue)) {
+            $isEmptyQueue = false;
+
+            if ($res){
+                $isEmptyQueue = $this->decrementQueueSize($queue, $model) <= 0;
+            }
+
+            if (!$res && $isEmptyQueue) {
                 break;
             }
 
@@ -184,4 +193,30 @@ class FairQueueDriver extends RedisQueue
         return !!$excludeAccesses;
     }
 
+
+    /**
+     * Increment queue size
+     *
+     * @param string $queue
+     * @param string $model
+     * @return bool|int
+     */
+    private function incrementQueueSize(string $queue, string $model)
+    {
+        $key = sprintf('fair-queue.queue_size.%1$s:%2$s', $queue, $model);
+        return Cache::store(config('fair-queue.cache_store'))->increment($key);
+    }
+
+    /**
+     * Decrement queue size
+     *
+     * @param string $queue
+     * @param string $model
+     * @return bool|int
+     */
+    private function decrementQueueSize(string $queue, string $model)
+    {
+        $key = sprintf('fair-queue.queue_size.%1$s:%2$s', $queue, $model);
+        return Cache::store(config('fair-queue.cache_store'))->decrement($key);
+    }
 }
