@@ -14,17 +14,10 @@ use Faker\Generator as Faker;
 */
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-$factory->define(\NetLinker\FairQueue\Sections\Horizons\Models\Horizon::class, function (Faker $faker) {
+$factory->define(\NetLinker\FairQueue\Sections\Queues\Models\Queue::class, function (Faker $faker) {
     return [
         'name' => $faker->name,
-        'memory_limit' => 1024,
-        'trim_recent' => 2880,
-        'trim_recent_failed' =>2880,
-        'trim_failed' => 10080,
-        'trim_monitored' => 2880,
+        'refresh_max_model_id' => 60,
         'active' => true,
     ];
 });
-
-
-

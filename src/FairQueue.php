@@ -111,7 +111,7 @@ class FairQueue
     public function getQueues(){
 
         if (!$this->runningAsHorizonWork()){
-            return null;
+            return collect();
         }
 
         $args = $_SERVER['argv'];

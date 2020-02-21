@@ -15,7 +15,7 @@ class QueueConfiguration
 {
 
     /** @var array $queue */
-    public $queues;
+    public $queues = [];
 
     /** @var $queuesResolver */
     public static $queuesResolver;

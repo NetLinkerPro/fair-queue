@@ -15,7 +15,8 @@ $ composer require netlinker/fair-queue
 
 ## Usage
 
-Documentation location is [here][link-documentation]
+Documentation location is [here][link-documentation-usage]
+Documentation for use in package is [here][link-documentation-package]
 
 ## Change log
 
@@ -57,4 +58,5 @@ license. Please see the [license file](license.md) for more information.
 [link-styleci]: https://styleci.io/repos/12345678
 [link-author]: https://github.com/netlinker
 [link-contributors]: ../../contributors
-[link-documentation]: ./docs/usage.md
+[link-documentation-usage]: ./docs/usage.md
+[link-documentation-package]: ./docs/package.md
