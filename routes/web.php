@@ -32,6 +32,7 @@ Route::domain(config('fair-queue.domain'))
             Route::get('/', config('fair-queue.controllers.job_statuses') . '@index')->name('index');
             Route::get('scope', config('fair-queue.controllers.job_statuses') . '@scope')->name('scope');
             Route::post('interrupt', config('fair-queue.controllers.job_statuses') . '@interrupt')->name('interrupt');
+            Route::post('cancel', config('fair-queue.controllers.job_statuses') . '@cancel')->name('cancel');
         });
 
         # Horizons
@@ -71,7 +72,7 @@ Route::domain(config('fair-queue.domain'))
             Route::patch('{id?}', config('fair-queue.controllers.accesses') . '@update')->name('update');
             Route::delete('{id?}', config('fair-queue.controllers.accesses') . '@destroy')->name('destroy');
             Route::get('objects', config('fair-queue.controllers.accesses') . '@objects')->name('objects');
-
+            Route::post('/test', config('fair-queue.controllers.accesses') . '@test')->name('test');
         });
 });
 

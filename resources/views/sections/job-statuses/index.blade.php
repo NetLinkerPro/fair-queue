@@ -21,8 +21,10 @@
                         @filtergroup(['filter' => ['' => __('fair-queue::general.all'), 'queued' =>
                         __('fair-queue::job-statuses.queued'), 'executing' => __('fair-queue::job-statuses.executing')
                         , 'finished' => __('fair-queue::job-statuses.finished'), 'failed' =>
-                        __('fair-queue::job-statuses.failed'), 'interrupted' =>
-                        __('fair-queue::job-statuses.interrupted')], 'variable' => 'status', 'default' => ''])
+                        __('fair-queue::job-statuses.failed'),
+                        'interrupted' => __('fair-queue::job-statuses.interrupted'),
+                        'canceled' => __('fair-queue::job-statuses.canceled')
+                        ], 'variable' => 'status', 'default' => ''])
                     </div>
                 </div>
             </div>
@@ -77,7 +79,9 @@
                                 reset-text="{{ __('fair-queue::general.reset') }}">
                     <div class="grid grid-gap-x grid_forms">
                         <div class="cell">
+                            <fb-input name="id" label="{{ __('fair-queue::general.id') }}"></fb-input>
                             <fb-input name="name" label="{{ __('fair-queue::general.name') }}"></fb-input>
+                            <fb-input name="job_id" label="{{ __('fair-queue::job-statuses.job_id') }}"></fb-input>
                             <fb-input name="status" label="{{ __('fair-queue::general.status') }}"></fb-input>
                             <fb-input name="external_uuid"
                                       label="{{ __('fair-queue::job-statuses.external_uuid') }}"></fb-input>
@@ -91,10 +95,10 @@
 
     <div class="section">
         @table([
-        'name' => 'job_statuses_table',
-        'row_url'=> '',
-        'scope_api_url' => route('fair-queue.job_statuses.scope'),
-        'scope_api_params' => ['status', 'external_uuid', 'orderBy', 'type', 'queue', 'job_id', 'name']
+            'name' => 'job_statuses_table',
+            'row_url'=> '',
+            'scope_api_url' => route('fair-queue.job_statuses.scope'),
+            'scope_api_params' => ['status', 'external_uuid', 'orderBy', 'type', 'queue', 'job_id', 'name', 'job_id', 'id']
         ])
         <template slot="header">
             <h3>{{__('fair-queue::job-statuses.job_list') }}</h3>
@@ -201,6 +205,10 @@
                                         @click="AWES._store.commit('setData', {param: 'interruptJobStatus', data: col.data}); AWES.emit('modal::interrupt_job_status:open')">
                                     {{ __('fair-queue::general.interrupt') }}
                                 </cm-button>
+                                <cm-button v-if="col.data.status === 'queued'"
+                                           @click="AWES._store.commit('setData', {param: 'cancelJobStatus', data: col.data}); AWES.emit('modal::cancel_job_status:open')">
+                                    {{ __('fair-queue::general.cancel') }}
+                                </cm-button>
                             </context-menu>
                         </template>
                     </tb-column>
@@ -218,7 +226,7 @@
     </modal-window>
 
     {{--Display logs--}}
-    <modal-window name="display_logs_job_status" class="modal_formbuilder" title="{{ __('fair-queue::general.logs') }}">
+    <modal-window name="display_logs_job_status" class="modal_formbuilder" title="{{ __('fair-queue::general.logs') }}" theme="fullscreen">
         <form-builder method="GET" url="" store-data="displayLogsJobStatus" auto-submit>
             <fb-textarea rows="20" name="logs" label="{{ __('fair-queue::general.logs') }}" readonly></fb-textarea>
         </form-builder>
@@ -250,6 +258,22 @@
                 <input type="hidden" name="id" :value="fields.id"/>
                 <!-- Fix enable button yes for delete -->
                 <input type="hidden" name="isEdited" :value="AWES._store.state.forms['interrupt_job_status']['isEdited'] = true"/>
+            </template>
+        </form-builder>
+    </modal-window>
+
+    {{--Cancel job status--}}
+    <modal-window name="cancel_job_status" class="modal_formbuilder" title="{{ __('fair-queue::job-statuses.are_you_sure_cancel_job_status') }}">
+        <form-builder name="cancel_job_status" method="POST" url="{{ route('fair-queue.job_statuses.cancel') }}" store-data="cancelJobStatus" @sended="AWES.emit('content::job_statuses_table:update')"
+                      send-text="{{ __('fair-queue::general.yes') }}"
+                      cancel-text="{{ __('fair-queue::general.no') }}"
+                      disabled-dialog>
+            <template slot-scope="fields">
+
+                <fb-input name="id" type="hidden"></fb-input>
+                <input type="hidden" name="id" :value="fields.id"/>
+                <!-- Fix enable button yes for delete -->
+                <input type="hidden" name="isEdited" :value="AWES._store.state.forms['cancel_job_status']['isEdited'] = true"/>
             </template>
         </form-builder>
     </modal-window>

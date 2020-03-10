@@ -34,12 +34,26 @@
         </div>
     </div>
 
+    @if(\Illuminate\Support\Facades\App::runningUnitTests())
+        @jobstatuses([
+            'queues' => ['fair_queue_test_job_status']
+        ])
+
+        <form-builder name="test" method="POST" url="{{ route('fair-queue.accesses.test') }}"
+                      @sended="AWES.emit('fair-queue::job-statuses:load')">
+            <template slot-scope="block">
+
+                <!-- Fix enable button yes for delete -->
+                <input type="hidden" name="isEdited" :value="AWES._store.state.forms['test']['isEdited'] = true"/>
+            </template>
+        </form-builder>
+    @endif
     <div class="section">
         @table([
-        'name' => 'accesses_table',
-        'row_url'=> '',
-        'scope_api_url' => route('fair-queue.accesses.scope'),
-        'scope_api_params' => []
+            'name' => 'accesses_table',
+            'row_url'=> '',
+            'scope_api_url' => route('fair-queue.accesses.scope'),
+            'scope_api_params' => []
         ])
         <template slot="header">
             <h3>{{__('fair-queue::accesses.access_list') }}</h3>

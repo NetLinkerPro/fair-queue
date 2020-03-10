@@ -143,6 +143,7 @@ trait TestHelper
         // Set queues
         $app['config']->set('queue.default', 'fair-queue');
         $app['config']->set('fair-queue.models.user', 'NetLinker\FairQueue\Tests\Stubs\User');
+
         $app['config']->set('fair-queue.models.owner', 'NetLinker\FairQueue\Tests\Stubs\Owner');
 
         $app['config']->set('queue.failed.database', 'testbench');

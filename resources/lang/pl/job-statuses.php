@@ -1,7 +1,10 @@
 <?php
 
 return [
+    'active_jobs' => 'Aktywne zadania',
+    'are_you_sure_cancel_job_status'=> 'Czy na pewno chcesz anulować zadanie?',
     'are_you_sure_interrupt_job_status' => 'Czy na pewno chcesz przerwać zadanie?',
+    'canceled' => 'Anulowane',
     'data_input' => 'Dane wejściowe',
     'data_input_short' => 'Wejściowe',
     'data_output' => 'Dane wyjściowe',
@@ -15,6 +18,8 @@ return [
     'job' => 'Zadanie',
     'job_id' => 'ID zadania',
     'job_list'=> 'Lista zadań',
+    'job_status' => 'Status zadania',
+    'job_status_was_successfully_canceled'  => 'Zadanie zostało pomyślnie anulowane',
     'job_status_was_successfully_interrupted' => 'Zadanie zostało pomyślnie przerwane',
     'jobs' => 'Zadania',
     'meta_description' => 'Zarządzanie zadaniami',

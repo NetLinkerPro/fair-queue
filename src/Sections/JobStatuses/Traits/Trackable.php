@@ -154,4 +154,23 @@ trait Trackable
         return $this->statusId;
     }
 
+    /**
+     * Save queue
+     *
+     * @param $queue
+     */
+    public function saveQueue($queue){
+        $this->update(['queue' => $queue]);
+    }
+
+    /**
+     * Is canceled
+     *
+     * @return bool
+     */
+    public function isCanceled(){
+        $jobStatus =  (new JobStatusRepository())->scopeOwner()->findOrFail($this->statusId);
+        return $jobStatus->cancel;
+    }
+
 }

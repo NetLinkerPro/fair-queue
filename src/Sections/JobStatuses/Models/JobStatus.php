@@ -11,12 +11,12 @@ use Ramsey\Uuid\Uuid;
 
 class JobStatus extends Model implements OwnableContract
 {
-
     const STATUS_QUEUED = 'queued';
     const STATUS_EXECUTING = 'executing';
     const STATUS_FINISHED = 'finished';
     const STATUS_FAILED = 'failed';
     const STATUS_INTERRUPTED = 'interrupted';
+    const STATUS_CANCELED = 'canceled';
 
     use SoftDeletes, HasOwner;
 
@@ -53,6 +53,7 @@ class JobStatus extends Model implements OwnableContract
         'started_at' => 'datetime',
         'finished_at' => 'datetime',
         'interrupt' => 'boolean',
+        'cancel' => 'boolean',
     ];
 
     /**
@@ -61,7 +62,7 @@ class JobStatus extends Model implements OwnableContract
      * @var array
      */
     public $fillable = ['uuid', 'owner_uuid', 'job_id', 'type', 'external_uuid', 'queue', 'attempts', 'progress_now', 'progress_max', 'interrupt',
-        'status', 'input', 'output', 'started_at', 'finished_at', 'logs', 'error', 'name', 'horizon_uuid'];
+        'status', 'input', 'output', 'started_at', 'finished_at', 'logs', 'error', 'name', 'horizon_uuid', 'cancel'];
 
     public $orderable = ['job_id', 'queue', 'type', 'name'];
 

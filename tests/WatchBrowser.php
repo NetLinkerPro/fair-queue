@@ -2,24 +2,20 @@
 
 namespace NetLinker\FairQueue\Tests;
 
-use Illuminate\Queue\QueueManager;
-use Illuminate\Queue\Worker;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Schema;
 use Laravel\Dusk\Browser;
-use Laravel\Horizon\MasterSupervisor;
-use Laravel\Horizon\Supervisor;
+use NetLinker\FairQueue\HorizonManager;
+use NetLinker\FairQueue\Queues\QueueConfiguration;
+use NetLinker\FairQueue\Sections\Horizons\Models\Horizon;
+use NetLinker\FairQueue\Sections\Queues\Models\Queue;
+use NetLinker\FairQueue\Sections\Supervisors\Models\Supervisor;
+use NetLinker\FairQueue\Tests\Mocks\TestJob;
 use NetLinker\FairQueue\Tests\Mocks\TestStatusJob;
 use NetLinker\FairQueue\Tests\Stubs\Owner;
 use NetLinker\FairQueue\Tests\Stubs\User;
-use NetLinker\FairQueue\Sections\Horizons\Models\Horizon;
-use Illuminate\Contracts\Debug\ExceptionHandler;
-use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Queue\WorkerOptions;
 
 class WatchBrowser extends BrowserTestCase
 {
@@ -52,6 +48,7 @@ class WatchBrowser extends BrowserTestCase
         parent::refreshApplication();
 
         if (Schema::hasTable('users_test')) {
+            Artisan::call('view:clear',[]);
             Auth::login(User::all()->first());
         }
 
@@ -66,31 +63,42 @@ class WatchBrowser extends BrowserTestCase
     public function watch()
     {
 
-        $horizon = factory(Horizon::class)->create();
-        Config::set('fair-queue.horizon_uuid', $horizon->uuid);
-
         $owner = factory(Owner::class)->create();
         factory(User::class)->create(['owner_uuid' => $owner->uuid,]);
         Auth::login(User::all()->first());
 
-        foreach (range(1, 2) as $number){
-            TestStatusJob::dispatch([]);
-        }
-        foreach (range(1, 2) as $number){
-            TestStatusJob::dispatch([])->onQueue('second');
-        }
+        $horizon = factory(Horizon::class)->create();
+        $supervisor = factory(Supervisor::class)->create();
 
-        $m = app()->make(MasterSupervisor::class);
+        $queue1 = factory(Queue::class)->create([
+            'horizon_uuid' => $horizon->uuid,
+            'supervisor_uuid' => $supervisor->uuid,
+            'queue' => 'fair_queue_test_job_status',
+        ]);
 
+        $queue2 = factory(Queue::class)->create([
+            'horizon_uuid' => $horizon->uuid,
+            'supervisor_uuid' => $supervisor->uuid,
+            'queue' => 'default',
+        ]);
 
+        QueueConfiguration::$queuesResolver = function () use (&$queue1, &$queue2) {
+            return [
+               'fair_queue_test_job_status' => $queue1,
+                'default' => $queue2,
+            ];
+        };
+        HorizonManager::$horizonResolver = function () use (&$horizon) {
+            return $horizon;
+        };
 
-        Artisan::call('queue:work', ['--queue' => 'default,second']);
+        TestStatusJob::dispatch()->onQueue('fair_queue_test_job_status');
 
         $this->browse(function (Browser $browser) {
 
             TestHelper::maximizeBrowserToScreen($browser);
             $browser->visit('fair-queue/accesses');
-            TestHelper::browserWatch($browser, false, ['default', 'second']);
+            TestHelper::browserWatch($browser, false, ['fair_queue_test_job_status']);
 
         });
 

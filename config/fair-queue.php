@@ -193,4 +193,15 @@ return [
     |
     */
     'system_work_warning' => 60,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Job statuses interval load
+    |--------------------------------------------------------------------------
+    |
+    | In panel user is display job statuses. It is automation load to UI job
+    | statuses with interval.
+    |
+    */
+    'job_statuses_interval_load' => 1500,
 ];

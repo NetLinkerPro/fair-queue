@@ -60,6 +60,12 @@ class TestStatusJob implements ShouldQueue
      */
     public function handle()
     {
+        if ($this->isCanceled()){
+            $this->setOutput([
+                'canceled' => true,
+            ]);
+            return;
+        }
         $this->loginUserJob();
         $this->setProgressMax(100);
 

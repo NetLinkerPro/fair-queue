@@ -35,10 +35,12 @@ class FairQueueDriver extends RedisQueue
         $queue = $queue ?? config('fair-queue.default_queue');
 
         $model = ModelKey::get($queue);
-        $size = $this->incrementQueueSize($queue, $model);
+        $this->incrementQueueSize($queue, $model);
 
         $modelId = $job->modelId ?? 0;
         $queue = QueueNameBuilder::build($queue, $model, $modelId);
+
+        $this->saveQueueForJobStatus($job, $queue);
 
         return parent::push($job, $data, $queue);
     }
@@ -223,5 +225,18 @@ class FairQueueDriver extends RedisQueue
         $queueWithModel = QueueNameBuilder::buildNameWithModelKey($model, $queue);
         $key = sprintf('fair-queue.queue_size.%1$s', $queueWithModel);
         return Cache::store(config('fair-queue.cache_store'))->get($key, 0);
+    }
+
+    /**
+     * Save queue for job status
+     *
+     * @param $job
+     * @param $queue
+     */
+    private function saveQueueForJobStatus($job, $queue)
+    {
+        if (method_exists($job, 'saveQueue')){
+            $job->saveQueue($queue);
+        }
     }
 }

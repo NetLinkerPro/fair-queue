@@ -3,7 +3,7 @@
 namespace NetLinker\FairQueue\Sections\Dashboard\Controllers;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Foundation\Bus\DispatchesJobStatuses;
+use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
@@ -11,7 +11,7 @@ use Illuminate\Routing\Controller as BaseController;
 class DashboardController extends BaseController
 {
 
-    use AuthorizesRequests, DispatchesJobStatuses, ValidatesRequests;
+    use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
     
     /**
      * Display a listing of the resource.

@@ -7,9 +7,14 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Redis;
 use NetLinker\FairQueue\Sections\Accesses\Repositories\AccessRepository;
 use NetLinker\FairQueue\Sections\Accesses\Requests\StoreAccess;
 use NetLinker\FairQueue\Sections\Accesses\Resources\Access;
+use NetLinker\FairQueue\Tests\Mocks\TestJob;
+use NetLinker\FairQueue\Tests\Mocks\TestStatusJob;
+use NetLinker\FairQueue\Tests\Mocks\TestStatusJobError;
 
 class AccessController extends BaseController
 {
@@ -111,5 +116,24 @@ class AccessController extends BaseController
     public function objects(Request $request)
     {
         return $this->accesses->getQueueObjects($request->queue_uuid, $request->q);
+    }
+
+    /**
+     * Test
+     *
+     * @param Request $request
+     * @return array
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @throws \NetLinker\FairQueue\Exceptions\FairQueueException
+     */
+    public function test(Request $request)
+    {
+        TestStatusJob::dispatch()->onQueue('fair_queue_test_job_status');
+
+       $ww = Redis::connection(config('fair-queue.connection'))->keys('*');
+dd($ww);
+        return [
+            'message' => 'Dodano do kolejki',
+        ];
     }
 }

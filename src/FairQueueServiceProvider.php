@@ -17,11 +17,12 @@ use Illuminate\Support\ServiceProvider;
 use NetLinker\FairQueue\Connectors\FairQueueConnector;
 use NetLinker\FairQueue\Sections\JobStatuses\Models\JobStatus;
 use NetLinker\FairQueue\Sections\JobStatuses\Repositories\JobStatusRepository;
+use \NetLinker\FairQueue\Sections\JobStatuses\BladeDirectives\JobStatuses as BladeDirectiveJobStatuses;
 
 class FairQueueServiceProvider extends ServiceProvider
 {
 
-    use EventMap, EventListenerSupervisor, EventListenerHorizon, EventListenerQueue;
+    use EventMap, EventListenerSupervisor, EventListenerHorizon, EventListenerQueue, BladeDirectiveJobStatuses;
 
     /**
      * Perform post-registration booting of services.
@@ -31,6 +32,8 @@ class FairQueueServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerEvents();
+
+        $this->bladeDirectiveJobStatusBoot();
 
         $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'fair-queue');
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'fair-queue');
@@ -215,9 +218,11 @@ class FairQueueServiceProvider extends ServiceProvider
 
             $jobStatus = (new JobStatusRepository())->scopeOwner()->findOrFail($jobStatusId);
 
-            // Set status interrupted if exist
+            // Set status interrupted if exist or cancel
             if ($jobStatus->interrupt && $data['status'] === JobStatus::STATUS_FINISHED) {
                 $data['status'] = JobStatus::STATUS_INTERRUPTED;
+            } else  if (($jobStatus->cancel && $data['status'] === JobStatus::STATUS_FINISHED) || $data['status'] ===JobStatus::STATUS_CANCELED) {
+                $data['status'] = JobStatus::STATUS_CANCELED;
             }
 
             // Try to add attempts to the data we're saving - this will fail

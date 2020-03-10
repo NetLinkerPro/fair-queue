@@ -15,6 +15,8 @@ class JobStatusRepository extends BaseRepository
         'status' => 'like',
         'external_uuid',
         'type' => 'like',
+        'job_id',
+        'id',
     ];
 
     public function entity()
@@ -85,6 +87,20 @@ class JobStatusRepository extends BaseRepository
             'horizon_uuid' => $uuid,
             'status' => JobStatus::STATUS_EXECUTING,
         ])->count();
+    }
+
+    /**
+     * Cancel
+     *
+     * @param $id
+     * @return int
+     */
+    public function cancel($id)
+    {
+        return $this->scopeOwner()->update([
+            'cancel' => true,
+            'status' => JobStatus::STATUS_CANCELED,
+        ], $id);
     }
 
 }
