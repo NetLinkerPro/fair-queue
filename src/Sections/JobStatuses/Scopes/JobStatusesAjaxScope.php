@@ -54,6 +54,6 @@ class JobStatusesAjaxScope extends ScopeAbstract
 
         }
 
-        return $builder->orderBy('created', 'desc');
+        return $builder->orderBy('created_at', 'desc');
     }
 }
