@@ -7,7 +7,8 @@ AWES._store.state.fair_queue_job_statuses_ajax.data.length >0 " store-data="fair
         <div v-for="job_status in ajaxData.data" >
 
             <div class="system-notify mb-10 tf-img is-info tf-size-small"
-                 :style="'background: linear-gradient(70deg, #4e93e0 '+job_status.progress_percentage+'%, rgb(120,175,239) '+job_status.progress_percentage+'%)'">
+                 :class="[job_status.status === 'finished' ? 'is-success': '' ,job_status.status === 'failed' ? 'is-danger':'']"
+                 :style="job_status.status !== 'failed' && job_status.status !== 'finished' ? 'background: linear-gradient(70deg, #4e93e0 '+job_status.progress_percentage+'%, rgb(120,175,239) '+job_status.progress_percentage+'%)':''">
                 <div class="p-10" >
                     <span>
                     {{ __('fair-queue::job-statuses.job_status') }}: <strong>@{{ job_status.__status }}</strong>
@@ -40,7 +41,7 @@ AWES._store.state.fair_queue_job_statuses_ajax.data.length >0 " store-data="fair
 
             var parameters = @JSON($config['queues']);
 
-            AWES.ajax({job_statuses_ajax: parameters}, '{{route('fair-queue.job_statuses.scope')}}', 'get')
+            AWES.ajax({job_statuses_ajax: parameters}, '{{route('fair-queue.job_statuses.scope')}}?limit={{config('fair-queue.job_statuses_show_ajax_limit')}}', 'get')
                 .then(function (data) {
                     AWES._store.commit('setData', {
                         param: 'fair_queue_job_statuses_ajax',

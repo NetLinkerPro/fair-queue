@@ -204,4 +204,36 @@ return [
     |
     */
     'job_statuses_interval_load' => 1500,
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Job statuses show success ajax
+    |--------------------------------------------------------------------------
+    |
+    | Time in seconds for display success status job in front ajax active jobs.
+    |
+    */
+    'job_statuses_show_success_ajax' => 30,
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Job statuses show failed ajax
+    |--------------------------------------------------------------------------
+    |
+    | Time in seconds for display failed status job in front ajax active jobs.
+    |
+    */
+    'job_statuses_show_failed_ajax' => 120,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Job statuses show ajax limit
+    |--------------------------------------------------------------------------
+    |
+    | Limit show active last job statuses
+    |
+    */
+    'job_statuses_show_ajax_limit' => 100,
 ];
