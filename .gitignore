@@ -7,4 +7,4 @@
 /.env
 /tests/Browser/console
 /tests/Browser/screenshots
-/database/database.sqlite
+/tests/database/database.sqlite
