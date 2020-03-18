@@ -2,17 +2,40 @@
 
 namespace NetLinker\FairQueue\Sections\JobStatuses\Traits;
 
+use Illuminate\Queue\Jobs\Job;
 use NetLinker\FairQueue\Exceptions\FairQueueException;
+use NetLinker\FairQueue\Sections\JobStatuses\Models\JobStatus;
 use NetLinker\FairQueue\Sections\JobStatuses\Repositories\JobStatusRepository;
 
 trait Trackable
 {
     /** @var int $statusId */
     public $statusId;
+
+    /** @var int $progressNow */
     public $progressNow = 0;
+
+    /** @var int $progressMax */
     public $progressMax = 0;
+
+    /** @var string $logs */
     public $logs = '';
+
+    /** @var $externalUuid */
     public $externalUuid;
+
+    /** @var $ownerUuid */
+    public $ownerUuid;
+
+    /**
+     * Set ownerUuid
+     *
+     * @param $value
+     */
+    protected function setOwnerUuid($ownerUuid)
+    {
+        $this->ownerUuid = $ownerUuid;
+    }
 
     /**
      * Set progress max
@@ -100,7 +123,13 @@ trait Trackable
      */
     protected function isInterrupt()
     {
-        $jobStatus =  (new JobStatusRepository())->scopeOwner()->findOrFail($this->statusId);
+        if (!$this->ownerUuid) {
+            $jobStatus = (new JobStatusRepository())->scopeOwner()->findOrFail($this->statusId);
+        } else {
+            $jobStatus = JobStatus::where('owner_uuid', $this->ownerUuid)
+                ->where('id', $this->statusId)
+                ->firstOrFail();
+        }
         return $jobStatus->interrupt;
     }
 
@@ -112,7 +141,18 @@ trait Trackable
      */
     protected function update(array $data)
     {
-        return (new JobStatusRepository())->scopeOwner()->update($data, $this->statusId);
+        if (!$this->ownerUuid) {
+            return (new JobStatusRepository())->scopeOwner()->update($data, $this->statusId);
+        } else {
+
+            $jobStatus = JobStatus::where('id', $this->statusId)
+                ->where('owner_uuid', $this->ownerUuid)
+                ->firstOrFail();
+
+            return $jobStatus
+                ->update($data);
+        }
+
     }
 
     /**
@@ -124,9 +164,24 @@ trait Trackable
     {
         $data = array_merge(['type' => $this->getDisplayName()], $data);
 
-        $jobStatus =  (new JobStatusRepository())->scopeOwner()->create($data);
+        if (!$this->ownerUuid) {
+
+            $jobStatus = (new JobStatusRepository())->scopeOwner()->create($data);
+        } else {
+
+            $data = array_merge([
+                'type' => $this->getDisplayName(),
+            ], $data);
+
+            $jobStatus = JobStatus::create($data);
+
+            $jobStatus->owner_uuid = $this->ownerUuid;
+            $jobStatus->save();
+        }
+
 
         $this->statusId = $jobStatus->id;
+
     }
 
     /**
@@ -159,7 +214,8 @@ trait Trackable
      *
      * @param $queue
      */
-    public function saveQueue($queue){
+    public function saveQueue($queue)
+    {
         $this->update(['queue' => $queue]);
     }
 
@@ -168,8 +224,16 @@ trait Trackable
      *
      * @return bool
      */
-    public function isCanceled(){
-        $jobStatus =  (new JobStatusRepository())->scopeOwner()->findOrFail($this->statusId);
+    public function isCanceled()
+    {
+
+        if (!$this->ownerUuid) {
+            $jobStatus = (new JobStatusRepository())->scopeOwner()->findOrFail($this->statusId);
+        } else {
+            $jobStatus = JobStatus::where('owner_uuid', $this->ownerUuid)
+                ->where('id', $this->statusId)
+                ->firstOrFail();
+        }
         return $jobStatus->cancel;
     }
 

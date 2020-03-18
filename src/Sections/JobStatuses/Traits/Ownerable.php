@@ -8,8 +8,8 @@ use NetLinker\FairQueue\Tests\Stubs\User;
 trait Ownerable
 {
 
-    /** @var string $userUuid */
-    protected $userUuid;
+    /** @var string $authUuid */
+    protected $authUuid;
 
     /**
      * Get auth user job
@@ -20,7 +20,8 @@ trait Ownerable
     {
         $fieldUuid = config('fair-queue.owner.field_auth_user_owner_uuid');
         $userClass = config('auth.providers.users.model');
-        return $userClass::where($fieldUuid, $this->userUuid)->firstOrFail();
+
+        return $userClass::where($fieldUuid, $this->authUuid)->firstOrFail();
     }
 
     /**
@@ -44,9 +45,15 @@ trait Ownerable
 
     /**
      * Prepare auth user job
+     *
+     * @param string|null $authUuid
      */
-    protected function prepareAuthUserJob(){
-       $this->userUuid = $this->getAuthUserUuid();
+    protected function prepareAuthUserJob($authUuid = null){
+        if (!$authUuid){
+            $this->authUuid = $this->getAuthUserUuid();
+        } else {
+            $this->authUuid = $authUuid;
+        }
     }
 
     /**

@@ -61,13 +61,15 @@ class TestErrorStatusJob implements ShouldQueue
      */
     public function handle()
     {
+        $this->loginUserJob();
+
         if ($this->isCanceled()){
             $this->setOutput([
                 'canceled' => true,
             ]);
             return;
         }
-        $this->loginUserJob();
+
         $this->setProgressMax(100);
 
         dump('run job');
