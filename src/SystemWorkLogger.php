@@ -23,6 +23,9 @@ class SystemWorkLogger
         /** @var QueueConfiguration $config */
         $config = app()->make(QueueConfiguration::class);
 
+        if (!$config->horizon){
+            return;
+        }
         $horizonUuid = $config->horizon->uuid;
         $supervisorUuid = $config->supervisor->uuid;
         $queueUuid = $config->queues[$queue]->uuid;
