@@ -3,6 +3,7 @@
 namespace NetLinker\FairQueue\Sections\JobStatuses\Traits;
 
 use Illuminate\Queue\Jobs\Job;
+use Illuminate\Support\Facades\Log;
 use NetLinker\FairQueue\Exceptions\FairQueueException;
 use NetLinker\FairQueue\Sections\JobStatuses\Models\JobStatus;
 use NetLinker\FairQueue\Sections\JobStatuses\Repositories\JobStatusRepository;
@@ -144,7 +145,12 @@ trait Trackable
         if (!$this->ownerUuid) {
             return (new JobStatusRepository())->scopeOwner()->update($data, $this->statusId);
         } else {
-
+            if (!$this->statusId){
+                throw new FairQueueException("Not found status ID.");
+            }
+            if (!$this->ownerUuid){
+                throw new FairQueueException("Not found owner UUID.");
+            }
             $jobStatus = JobStatus::where('id', $this->statusId)
                 ->where('owner_uuid', $this->ownerUuid)
                 ->firstOrFail();
