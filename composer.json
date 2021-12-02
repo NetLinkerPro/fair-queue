@@ -79,7 +79,4 @@
             }
         }
     },
-    "scripts": {
-        "pre-push": "REDIS_HOST=0.0.0.0 REDIS_PASSWORD=secret ./vendor/bin/phpunit && echo pushing!"
-    }
 }
