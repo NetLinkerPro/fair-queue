@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Log;
 use NetLinker\FairQueue\Exceptions\FairQueueException;
 use NetLinker\FairQueue\Sections\JobStatuses\Models\JobStatus;
 use NetLinker\FairQueue\Sections\JobStatuses\Repositories\JobStatusRepository;
+use Throwable;
 
 trait Trackable
 {
@@ -151,9 +152,14 @@ trait Trackable
             if (!$this->ownerUuid){
                 throw new FairQueueException("Not found owner UUID.");
             }
-            $jobStatus = JobStatus::where('id', $this->statusId)
-                ->where('owner_uuid', $this->ownerUuid)
-                ->firstOrFail();
+            try{
+                $jobStatus = JobStatus::where('id', $this->statusId)
+                    ->where('owner_uuid', $this->ownerUuid)
+                    ->firstOrFail();
+            } catch (Throwable $exception){
+                Log::error('Failed job status ' . $exception->getMessage(), ['exception' =>$exception]);
+                throw $exception;
+            }
 
             return $jobStatus
                 ->update($data);
