@@ -157,8 +157,7 @@ trait Trackable
                     ->where('owner_uuid', $this->ownerUuid)
                     ->firstOrFail();
             } catch (Throwable $exception){
-                Log::error('Failed job status ' . $exception->getMessage(), ['exception' =>$exception]);
-                throw $exception;
+                throw new FairQueueException('Failed jos status ' . json_encode([$this->statusId, $this->ownerUuid]), $exception->getCode(), $exception);
             }
 
             return $jobStatus
